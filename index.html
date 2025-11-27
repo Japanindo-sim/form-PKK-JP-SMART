@@ -3,1580 +3,661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JP SMART - Dashboard Permohonan Kartu</title>
+    <title>JP SMART - Sistem Permohonan Kartu</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        :root {
-            --primary: 79 70 229;
-            --primary-dark: 67 56 202;
-            --secondary: 99 102 241;
-            --success: 34 197 94;
-            --warning: 251 146 60;
-            --danger: 239 68 68;
-            --dark: 15 23 42;
-            --light: 248 250 252;
-        }
-
-        [data-theme="dark"] {
-            --primary: 99 102 241;
-            --primary-dark: 79 70 229;
-            --dark: 248 250 252;
-            --light: 15 23 42;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        [data-theme="dark"] body {
-            background: #0f172a;
-            color: #f1f5f9;
-        }
-
-        [data-theme="dark"] .card {
-            background: #1e293b;
-            border-color: #334155;
-        }
-
-        [data-theme="dark"] input, 
-        [data-theme="dark"] select, 
-        [data-theme="dark"] textarea {
-            background: #0f172a;
-            border-color: #334155;
-            color: #f1f5f9;
-        }
-
-        [data-theme="dark"] table {
-            color: #f1f5f9;
-        }
-
-        [data-theme="dark"] thead {
-            background: #1e293b !important;
-        }
-
-        [data-theme="dark"] tbody tr {
-            background: #0f172a !important;
-            border-color: #334155 !important;
-        }
-
-        [data-theme="dark"] tbody tr:hover {
-            background: #1e293b !important;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(var(--light), 0.1);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(var(--primary), 0.5);
-            border-radius: 10px;
-            transition: background 0.3s;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(var(--primary), 0.8);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .animate-slide-in {
-            animation: slideIn 0.4s ease-out;
-        }
-
-        .animate-spin {
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .uppercase-input { text-transform: uppercase; }
+        .loader {
+            border: 3px solid #f3f3f3; border-top: 3px solid #4f46e5;
+            border-radius: 50%; width: 40px; height: 40px;
             animation: spin 1s linear infinite;
         }
-
-        .animate-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        /* Card Component */
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Button Enhancements */
-        .btn {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* Input Focus Effects */
-        .input-field {
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(var(--primary), 0.15);
-        }
-
-        /* Skeleton Loader */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        [data-theme="dark"] .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        /* Badge Styles */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.025em;
-        }
-
-        /* Table Improvements */
-        .table-wrapper {
-            position: relative;
-            overflow-x: auto;
-            border-radius: 12px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: rgb(var(--light));
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-size: 0.75rem;
-        }
-
-        tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        tbody tr:hover {
-            transform: scale(1.01);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Modal Backdrop */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 9998;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        /* Uppercase Input */
-        .uppercase-input {
-            text-transform: uppercase;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            border: 3px solid rgba(var(--primary), 0.1);
-            border-top-color: rgb(var(--primary));
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
-        }
-
-        /* Pagination */
-        .pagination-btn {
-            transition: all 0.2s ease;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(var(--primary), 0.3);
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* Search Input Enhancement */
-        .search-input-wrapper {
-            position: relative;
-        }
-
-        .search-input-wrapper::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: rgb(var(--primary));
-            transition: width 0.3s ease;
-        }
-
-        .search-input-wrapper:focus-within::after {
-            width: 100%;
-        }
-
-        /* Stats Card */
-        .stat-card {
-            background: linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--secondary)) 100%);
-            color: white;
-            padding: 24px;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(var(--primary), 0.3);
-        }
-
-        /* Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            width: 48px;
-            height: 24px;
-            background: #cbd5e1;
-            border-radius: 12px;
-            transition: background 0.3s;
-            cursor: pointer;
-        }
-
-        .toggle-switch.active {
-            background: rgb(var(--primary));
-        }
-
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .toggle-switch.active::after {
-            transform: translateX(24px);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stat-card {
-                padding: 16px;
-            }
-            
-            .card {
-                border-radius: 12px;
-            }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="text-slate-800">
 
-    <!-- Main Container -->
-    <div id="app" class="relative">
+    <div id="app" class="max-w-7xl mx-auto p-4 lg:p-6">
 
-        <!-- Login Page -->
-        <div id="login-section" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-            <div class="w-full max-w-md animate-fade-in">
-                <div class="card p-8 space-y-6">
-                    <div class="text-center space-y-3">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg">
-                            <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
-                        </div>
-                        <h1 class="text-3xl font-bold text-slate-900">JP SMART - PPK DASHBOARD</h1>
-                        <p class="text-slate-500 text-sm">Sistem Permohonan Kartu Keluar</p>
+        <div id="login-section" class="min-h-[80vh] flex items-center justify-center">
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
+                <div class="text-center mb-8">
+                    <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="shield-check" class="text-indigo-600 h-8 w-8"></i>
                     </div>
-
-                    <div class="space-y-4">
-                        <div class="search-input-wrapper">
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Username</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i data-lucide="user" class="w-5 h-5 text-slate-400"></i>
-                                </div>
-                                <input type="text" id="username" placeholder="Masukkan username" 
-                                    class="input-field w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
-                            </div>
-                        </div>
-
-                        <div class="search-input-wrapper">
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Password</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <i data-lucide="lock" class="w-5 h-5 text-slate-400"></i>
-                                </div>
-                                <input type="password" id="password" placeholder="Masukkan password"
-                                    class="input-field w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button id="login-btn" class="btn w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 active:scale-95 transition-all font-semibold text-base shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                        <i data-lucide="log-in" class="w-5 h-5"></i>
-                        <span>Masuk</span>
-                    </button>
-
-                    <p id="login-error" class="text-red-500 text-sm text-center min-h-[20px]"></p>
+                    <h1 class="text-2xl font-bold text-slate-900">JP SMART LOGIN</h1>
+                </div>
+                <div class="space-y-4">
+                    <input type="text" id="username" placeholder="Username" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    <button id="login-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-semibold transition shadow-lg shadow-indigo-200">Masuk Aplikasi</button>
                 </div>
             </div>
         </div>
 
-        <!-- App Section -->
-        <div id="app-section" class="hidden min-h-screen">
+        <div id="app-section" class="hidden">
             
-            <!-- Header -->
-            <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200 shadow-sm">
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md">
-                                <i data-lucide="layout-dashboard" class="w-6 h-6 text-white"></i>
-                            </div>
-                            <div>
-                                <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">JP SMART - PKK DASHBOARD</h1>
-                                
-                                <p class="text-sm text-slate-500">Halo, <span id="user-display" class="font-semibold text-indigo-600"></span>!</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2 sm:gap-3">
-                            <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors" title="Toggle Theme">
-                                <i data-lucide="moon" class="w-5 h-5 text-slate-600"></i>
-                            </button>
-                            <button id="show-form-btn" class="btn flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2.5 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-medium text-sm shadow-md hover:shadow-lg">
-                                <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Buat</span>
-                            </button>
-                            <button id="logout-btn" class="btn flex items-center gap-2 bg-red-500 text-white px-4 py-2.5 rounded-xl hover:bg-red-600 transition-all font-medium text-sm shadow-md hover:shadow-lg">
-                                <i data-lucide="log-out" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Keluar</span>
-                            </button>
-                        </div>
+            <nav class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6 sticky top-2 z-30">
+                <div class="flex items-center gap-3 mb-4 md:mb-0">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg"><i data-lucide="card-sim" class="h-5 w-5"></i></div>
+                    <div>
+                        <h1 class="font-bold text-lg text-slate-800">Dashboard - Permohonan Kartu Keluar</h1>
+                        <p class="text-xs text-slate-500">Halo, <span id="user-display" class="font-bold text-indigo-600"></span></p>
                     </div>
                 </div>
-            </header>
+                <div class="flex gap-2">
+                    <button onclick="openForm()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md shadow-indigo-100">
+                        <i data-lucide="plus-circle" class="h-4 w-4"></i> Buat Permohonan
+                    </button>
+                    <button onclick="handleLogout()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i data-lucide="log-out" class="h-4 w-4"></i> Keluar
+                    </button>
+                </div>
+            </nav>
 
-            <!-- Dashboard Section -->
-            <div id="dashboard-section" class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div id="dashboard-view" class="space-y-6">
                 
-                <!-- Stats Cards -->
-                <div id="stats-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Stats will be inserted here -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="sim-card" class="h-16 w-16 text-indigo-600"></i></div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Kartu Keluar</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-total-all">0</div>
+                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
+                            <span class="text-blue-600 bg-blue-50 px-2 py-1 rounded">Call: <b id="stat-total-call">0</b></span>
+                            <span class="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Data: <b id="stat-total-data">0</b></span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="check-circle-2" class="h-16 w-16 text-green-600"></i></div>
+                        <h3 class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Status Lunas</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-lunas-all">0</div>
+                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
+                            <span class="text-green-600">Call: <b id="stat-lunas-call">0</b></span>
+                            <span class="text-green-600">Data: <b id="stat-lunas-data">0</b></span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="banknote" class="h-16 w-16 text-amber-500"></i></div>
+                        <h3 class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Dana Talangan</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-dana-all">0</div>
+                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
+                            <span class="text-amber-600">Call: <b id="stat-dana-call">0</b></span>
+                            <span class="text-amber-600">Data: <b id="stat-dana-data">0</b></span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="truck" class="h-16 w-16 text-rose-500"></i></div>
+                        <h3 class="text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">COD</h3>
+                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-cod-all">0</div>
+                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
+                            <span class="text-rose-600">Call: <b id="stat-cod-call">0</b></span>
+                            <span class="text-rose-600">Data: <b id="stat-cod-data">0</b></span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Requests Table Card -->
-                <div class="card p-6 animate-fade-in">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
-                                <span id="dashboard-title">Permohonan</span>
-                            </h2>
-                            <p class="text-sm text-slate-500 mt-1">Kelola data permohonan kartu keluar</p>
-                        </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h2 class="font-bold text-slate-700 flex items-center gap-2">
+                            <i data-lucide="list" class="h-4 w-4 text-indigo-500"></i> Daftar Permohonan
+                        </h2>
+                        <div class="text-xs text-slate-400">Menampilkan 10 data per halaman</div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs">
+                                <tr>
+                                    <th class="px-6 py-3">ID & Tanggal</th>
+                                    <th class="px-6 py-3">LPK & PIC</th>
+                                    <th class="px-6 py-3 text-center">Jml Kartu</th>
+                                    <th class="px-6 py-3">User</th>
+                                    <th class="px-6 py-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-slate-100">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 border-t border-slate-100 flex justify-between items-center bg-slate-50/30" id="pagination-controls">
+                        <button id="prev-btn" class="px-4 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition">Sebelumnya</button>
+                        <span id="page-info" class="text-xs font-semibold text-slate-600">Halaman 1</span>
+                        <button id="next-btn" class="px-4 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition">Selanjutnya</button>
+                    </div>
+                </div>
+                
+                <div id="history-box" class="hidden bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-700 mb-3 flex gap-2"><i data-lucide="history" class="h-4 w-4"></i> Riwayat</h3>
+                    <div class="h-40 overflow-y-auto text-xs space-y-2" id="history-list"></div>
+                </div>
+            </div>
+
+            <div id="form-view" class="hidden">
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 max-w-5xl mx-auto">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/30 rounded-t-2xl">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="file-edit" class="text-indigo-600"></i> Form Permohonan</h2>
+                        <button onclick="showDashboard()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x-circle"></i></button>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <input type="hidden" id="edit-id">
                         
-                        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                            <div class="search-input-wrapper flex-1 sm:flex-initial">
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
-                                    </div>
-                                    <input type="text" id="search-input" placeholder="Cari permohonan..." 
-                                        class="input-field w-full sm:w-64 pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                </div>
-                            </div>
-                            <button id="refresh-btn" class="btn p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors" title="Refresh Data">
-                                <i data-lucide="refresh-cw" class="w-4 h-4 text-slate-600"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Table -->
-                    <div class="table-wrapper">
-                        <table class="min-w-full">
-                            <thead class="bg-slate-100">
-                                <tr>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-200 transition-colors" data-sort="id">
-                                        <div class="flex items-center gap-2">
-                                            ID <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-200 transition-colors" data-sort="lpk">
-                                        <div class="flex items-center gap-2">
-                                            LPK <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-200 transition-colors" data-sort="pic">
-                                        <div class="flex items-center gap-2">
-                                            PIC <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-200 transition-colors" data-sort="tanggal">
-                                        <div class="flex items-center gap-2">
-                                            Tanggal <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
-                                        </div>
-                                    </th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600">Pemohon</th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600">Jumlah</th>
-                                    <th class="py-3 px-4 text-center text-xs font-semibold text-slate-600">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="requests-table-body">
-                                <!-- Loading skeleton -->
-                                <tr class="loading-skeleton">
-                                    <td colspan="7" class="py-12 text-center">
-                                        <div class="spinner mx-auto"></div>
-                                        <p class="text-slate-500 mt-4">Memuat data...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div id="pagination-container" class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-6 border-t border-slate-200">
-                        <div class="text-sm text-slate-600">
-                            Menampilkan <span id="showing-range" class="font-semibold">0</span> dari <span id="total-items" class="font-semibold">0</span> data
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button id="prev-page" class="pagination-btn px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-sm font-medium disabled:opacity-50" disabled>
-                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                            </button>
-                            <div id="page-numbers" class="flex gap-1">
-                                <!-- Page numbers will be inserted here -->
-                            </div>
-                            <button id="next-page" class="pagination-btn px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-sm font-medium disabled:opacity-50" disabled>
-                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- History Section (Admin Only) -->
-                <div id="history-section" class="hidden card p-6 animate-fade-in">
-                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
-                        <i data-lucide="history" class="w-5 h-5 text-indigo-600"></i>
-                        <span>Riwayat Aktivitas</span>
-                    </h2>
-                    <div class="table-wrapper max-h-96 overflow-auto">
-                        <table class="min-w-full">
-                            <thead class="bg-slate-100 sticky top-0">
-                                <tr>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600">Waktu</th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600">User</th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600">Aksi</th>
-                                    <th class="py-3 px-4 text-left text-xs font-semibold text-slate-600">Detail</th>
-                                </tr>
-                            </thead>
-                            <tbody id="history-table-body">
-                                <!-- History data will be inserted here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form Section -->
-            <div id="form-section" class="hidden container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <div class="max-w-5xl mx-auto">
-                    <div class="card p-6 sm:p-8 animate-fade-in">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                <i data-lucide="file-plus-2" class="w-5 h-5 text-indigo-600"></i>
-                                <span>Form Permohonan</span>
-                            </h2>
-                            <button id="back-to-dashboard-btn" class="btn flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
-                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Kembali</span>
-                            </button>
-                        </div>
-
-                        <input type="hidden" id="form-edit-id">
-
-                        <!-- Form Fields -->
-                        <div class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">LPK *</label>
-                                    <input type="text" id="form-lpk" placeholder="Nama LPK" 
-                                        class="uppercase-input input-field w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">PIC *</label>
-                                    <input type="text" id="form-pic" placeholder="Nama PIC" 
-                                        class="uppercase-input input-field w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-2">Tanggal Kirim *</label>
-                                    <input type="date" id="form-tanggal" 
-                                        class="input-field w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                            </div>
-
-                            <!-- Items List -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-base font-semibold text-slate-900">Detail Permohonan</h3>
-                                    <button id="add-item-btn" class="btn flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all text-sm shadow-md hover:shadow-lg">
-                                        <i data-lucide="plus" class="w-4 h-4"></i>
-                                        <span>Tambah</span>
-                                    </button>
-                                </div>
-                                <div id="items-container" class="space-y-3">
-                                    <!-- Items will be inserted here -->
-                                </div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Nama LPK</label>
+                                <input type="text" id="inp-lpk" class="w-full px-3 py-2 border rounded-lg uppercase-input focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
-
-                            <!-- Signature Fields -->
-                            <div class="border-t border-slate-200 pt-6">
-                                <h3 class="text-base font-semibold text-slate-900 mb-4">Persetujuan</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 mb-2">Penerima</label>
-                                        <select id="form-penerima" class="input-field w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                            <option>HEGAR</option>
-                                            <option>RIDWAN</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 mb-2">Menyetujui</label>
-                                        <select id="form-menyetujui" class="input-field w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                            <option>HANNA</option>
-                                            <option>AYU</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 mb-2">Mengetahui</label>
-                                        <select id="form-mengetahui" class="input-field w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                            <option>PAK NOVI</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">PIC LPK</label>
+                                <input type="text" id="inp-pic" class="w-full px-3 py-2 border rounded-lg uppercase-input focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex justify-end gap-3 pt-6">
-                                <button id="submit-request-btn" class="btn flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold shadow-lg hover:shadow-xl">
-                                    <i data-lucide="send" class="w-5 h-5"></i>
-                                    <span>Kirim Permohonan</span>
-                                </button>
-                                <button id="update-request-btn" class="hidden btn flex items-center gap-2 bg-amber-500 text-white px-6 py-3 rounded-xl hover:bg-amber-600 transition-all font-semibold shadow-lg hover:shadow-xl">
-                                    <i data-lucide="save" class="w-5 h-5"></i>
-                                    <span>Simpan Perubahan</span>
-                                </button>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Tanggal Kirim</label>
+                                <input type="date" id="inp-tanggal" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
                         </div>
+
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-700 text-sm">Daftar Nama Kartu</h3>
+                                <button onclick="addItemRow()" class="bg-white border border-indigo-200 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-50 flex items-center gap-1 shadow-sm">
+                                    <i data-lucide="plus" class="w-3 h-3"></i> Tambah Baris
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-12 gap-2 mb-2 px-2 text-xs font-bold text-slate-400 uppercase">
+                                <div class="col-span-3">Nama</div>
+                                <div class="col-span-2">Tipe</div>
+                                <div class="col-span-3">ICCID</div>
+                                <div class="col-span-3">Keterangan</div>
+                                <div class="col-span-1"></div>
+                            </div>
+                            
+                            <div id="items-container" class="space-y-2 max-h-[400px] overflow-y-auto pr-2"></div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 pt-4 border-t">
+                            <div><label class="text-xs font-bold text-slate-500">Penerima</label><select id="inp-penerima" class="w-full mt-1 border rounded p-2 text-sm"><option>HEGAR</option><option>RIDWAN</option></select></div>
+                            <div><label class="text-xs font-bold text-slate-500">Menyetujui</label><select id="inp-menyetujui" class="w-full mt-1 border rounded p-2 text-sm">
+                                <option>HANNA</option>
+                                <option>AYU</option>
+                                </select></div>
+                            <div><label class="text-xs font-bold text-slate-500">Mengetahui</label><select id="inp-mengetahui" class="w-full mt-1 border rounded p-2 text-sm"><option>PAK NOVI</option></select></div>
+                        </div>
+                    </div>
+
+                    <div class="p-5 bg-slate-50 rounded-b-2xl border-t border-slate-100 flex justify-end gap-3">
+                        <button onclick="showDashboard()" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-600 rounded-lg text-sm font-semibold hover:bg-slate-50">Batal</button>
+                        <button onclick="submitForm()" id="btn-submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-md flex items-center gap-2"><i data-lucide="send" class="w-4 h-4"></i> Simpan Data</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Loading Overlay -->
-        <div id="loader" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div class="bg-white rounded-2xl p-8 shadow-2xl">
-                <div class="spinner mx-auto"></div>
-                <p class="text-slate-700 mt-4 font-medium">Memproses...</p>
-            </div>
+        <div id="loader" class="hidden fixed inset-0 bg-white/90 backdrop-blur-sm flex flex-col justify-center items-center z-50">
+            <div class="loader mb-3"></div>
+            <p class="text-slate-500 text-sm font-medium animate-pulse">Memproses data...</p>
         </div>
+
     </div>
 
     <script>
-        // ==================== STATE MANAGEMENT ====================
-        const AppState = {
-            currentUser: null,
-            allRequests: [],
-            filteredRequests: [],
-            currentPage: 1,
-            itemsPerPage: 10,
-            sortBy: null,
-            sortOrder: 'asc',
-            searchQuery: '',
-            theme: localStorage.getItem('jp-smart-theme') || 'light'
-        };
+        lucide.createIcons();
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyi31_qjJFaRC9f3F55wBpKGFYoRJAoGy2bREmXqCKWEVx0ac8yvPf0Lzaj-5iO5CVR/exec'; 
+        
+        // State
+        let currentUser = null;
+        let requestsData = [];
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 10;
 
-        // ==================== CONFIGURATION ====================
-        const CONFIG = {
-            // PASTIKAN URL INI ADALAH DEPLOYMENT TERBARU (EXEC)
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyi31_qjJFaRC9f3F55wBpKGFYoRJAoGy2bREmXqCKWEVx0ac8yvPf0Lzaj-5iO5CVR/exec',
-            SESSION_KEY: 'jp-smart-session' // Tambahkan key session
+        // --- CORE UI ---
+        const toggleLoader = (show) => document.getElementById('loader').classList.toggle('hidden', !show);
+        
+        async function api(action, payload={}) {
+            toggleLoader(true);
+            try {
+                const res = await fetch(SCRIPT_URL, { 
+                    method:'POST', body: JSON.stringify({ action, user:currentUser, ...payload }) 
+                });
+                const json = await res.json();
+                if(!json.success) throw new Error(json.message);
+                return json.data;
+            } catch(e) {
+                Swal.fire('Error', e.message, 'error');
+                return null;
+            } finally { toggleLoader(false); }
         }
 
-        // ==================== DOM ELEMENTS ====================
-        const DOM = {
-            loginSection: document.getElementById('login-section'),
-            appSection: document.getElementById('app-section'),
-            dashboardSection: document.getElementById('dashboard-section'),
-            formSection: document.getElementById('form-section'),
-            loader: document.getElementById('loader'),
-            userDisplay: document.getElementById('user-display'),
-            requestsTableBody: document.getElementById('requests-table-body'),
-            historyTableBody: document.getElementById('history-table-body'),
-            statsContainer: document.getElementById('stats-container'),
-            searchInput: document.getElementById('search-input'),
-            itemsContainer: document.getElementById('items-container')
-        };
-
-        // ==================== UTILITY FUNCTIONS ====================
-        const Utils = {
-            toggleLoader(show) {
-                if(DOM.loader) DOM.loader.classList.toggle('hidden', !show);
-            },
-
-            // Toast kecil di pojok
-            showToast(message, type = 'info') {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end', // Pindah ke atas agar lebih terlihat
-                    icon: type,
-                    title: message,
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            },
-
-            // Alert besar (Popup) untuk Error Login
-            showAlert(title, message, type = 'error') {
-                Swal.fire({
-                    icon: type,
-                    title: title,
-                    text: message,
-                    confirmButtonColor: '#4f46e5'
-                });
-            },
-
-            formatDate(dateString) {
-                return new Date(dateString).toLocaleDateString('id-ID', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            },
-
-            formatDateTime(dateString) {
-                return new Date(dateString).toLocaleString('id-ID', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            },
-
-            debounce(func, wait) {
-                let timeout;
-                return function executedFunction(...args) {
-                    const later = () => {
-                        clearTimeout(timeout);
-                        func(...args);
-                    };
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                };
+        // --- LOGIN & INIT ---
+        document.getElementById('login-btn').onclick = async () => {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const res = await api('login', {username:u, password:p});
+            if(res) {
+                currentUser = res;
+                sessionStorage.setItem('jp_user', JSON.stringify(res));
+                initApp();
             }
         };
 
-        // ==================== API FUNCTIONS ====================
-        const API = {
-            async call(action, payload = {}) {
-                Utils.toggleLoader(true);
-                console.log(`[API START] Action: ${action}`, payload); // Debugging
+        function handleLogout() {
+            sessionStorage.removeItem('jp_user');
+            window.location.reload();
+        }
 
-                try {
-                    const response = await fetch(CONFIG.SCRIPT_URL, {
-                        method: 'POST',
-                        // mode: 'no-cors', // JANGAN GUNAKAN no-cors jika butuh respon JSON
-                        redirect: "follow", // Penting untuk GAS
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action, user: AppState.currentUser, ...payload })
+        function initApp() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('app-section').classList.remove('hidden');
+            document.getElementById('user-display').innerText = currentUser.username;
+            document.getElementById('history-box').classList.toggle('hidden', currentUser.role !== 'superadmin');
+            loadData();
+        }
+
+        async function loadData() {
+            const data = await api('getRequests');
+            if(data) {
+                requestsData = data;
+                calculateStats(data);
+                renderTable(1);
+            }
+            if(currentUser.role === 'superadmin') {
+                const hist = await api('getHistory');
+                const hList = document.getElementById('history-list');
+                hList.innerHTML = hist.map(h => 
+                    `<div class="border-l-2 border-indigo-200 pl-2 pb-1"><div class="font-bold text-slate-700">${h.user} - ${h.action}</div><div class="text-slate-400">${new Date(h.timestamp).toLocaleString()}</div></div>`
+                ).join('');
+            }
+        }
+
+        // --- STATS ENGINE ---
+        function calculateStats(data) {
+            let stats = {
+                total: {call:0, data:0},
+                lunas: {call:0, data:0},
+                dana: {call:0, data:0},
+                cod: {call:0, data:0}
+            };
+
+            data.forEach(req => {
+                let items = [];
+                try { items = JSON.parse(req.items); } catch(e){}
+                
+                items.forEach(item => {
+                    const type = (item.type || '').toUpperCase();
+                    const ket = (item.keterangan || '').toUpperCase();
+                    
+                    const isCall = type.includes('CALL');
+                    const target = isCall ? 'call' : 'data';
+
+                    stats.total[target]++;
+
+                    if(ket === 'LUNAS') stats.lunas[target]++;
+                    else if(ket.includes('DANA')) stats.dana[target]++;
+                    else if(ket === 'COD') stats.cod[target]++;
+                });
+            });
+
+            const updateUI = (key) => {
+                document.getElementById(`stat-${key}-all`).innerText = stats[key].call + stats[key].data;
+                document.getElementById(`stat-${key}-call`).innerText = stats[key].call;
+                document.getElementById(`stat-${key}-data`).innerText = stats[key].data;
+            };
+            ['total', 'lunas', 'dana', 'cod'].forEach(updateUI);
+        }
+
+        // --- TABLE & PAGINATION ---
+        function renderTable(page) {
+            currentPage = page;
+            const start = (page - 1) * ITEMS_PER_PAGE;
+            const paginated = requestsData.slice(start, start + ITEMS_PER_PAGE);
+            const tbody = document.getElementById('table-body');
+            
+            tbody.innerHTML = '';
+            
+            if(paginated.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-400">Tidak ada data.</td></tr>`;
+                return;
+            }
+
+            paginated.forEach(r => {
+                let items = [];
+                try { items = JSON.parse(r.items); } catch(e){}
+                
+                const ketUnik = [...new Set(items.map(i => i.keterangan || '-'))].join(', ');
+                const isAdmin = currentUser.role === 'superadmin';
+
+                tbody.innerHTML += `
+                <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-50 fade-in">
+                    <td class="px-6 py-4">
+                        <div class="font-mono text-xs text-indigo-500 font-bold">${r.id}</div>
+                        <div class="text-xs text-slate-400 mt-1">${new Date(r.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'})}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-slate-700">${r.lpk}</div>
+                        <div class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> ${r.pic}</div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full">${items.length} Kartu</span>
+                        <div class="text-[10px] text-slate-400 mt-1 truncate max-w-[100px] mx-auto" title="${ketUnik}">${ketUnik}</div>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-500">${r.submitted_by}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="printPDF('${r.id}')" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Print PDF"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                            ${isAdmin ? `
+                            <button onclick="editItem('${r.id}')" class="text-amber-500 hover:bg-amber-50 p-2 rounded-lg transition" title="Edit"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem('${r.id}')" class="text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>`;
+            });
+
+            // Update Buttons
+            const totalPages = Math.ceil(requestsData.length / ITEMS_PER_PAGE);
+            document.getElementById('page-info').innerText = `Halaman ${currentPage} dari ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages || totalPages === 0;
+            
+            document.getElementById('prev-btn').onclick = () => renderTable(currentPage - 1);
+            document.getElementById('next-btn').onclick = () => renderTable(currentPage + 1);
+            
+            lucide.createIcons();
+        }
+
+        // --- FORM & ITEMS LOGIC ---
+        function addItemRow(data = {}) {
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-12 gap-2 item-row items-center animate-fade-in mb-2';
+            div.innerHTML = `
+                <div class="col-span-3">
+                    <input type="text" value="${data.name||''}" class="inp-name w-full px-2 py-2 border rounded text-xs uppercase-input focus:ring-1 focus:ring-indigo-500" placeholder="Nama Peserta">
+                </div>
+                <div class="col-span-2">
+                    <select class="inp-type w-full px-1 py-2 border rounded text-xs bg-white">
+                        <option ${data.type==='CALL SIM'?'selected':''}>CALL SIM</option>
+                        <option ${data.type==='DATA SIM'?'selected':''}>DATA SIM</option>
+                    </select>
+                </div>
+                <div class="col-span-3">
+                    <input type="text" value="${data.iccid||''}" class="inp-iccid w-full px-2 py-2 border rounded text-xs uppercase-input" placeholder="ICCID">
+                </div>
+                <div class="col-span-3">
+                    <select class="inp-ket w-full px-1 py-2 border rounded text-xs bg-white text-slate-600 font-medium">
+                        <option value="LUNAS" ${data.keterangan==='LUNAS'?'selected':''}>LUNAS</option>
+                        <option value="DANA TALANG" ${data.keterangan==='DANA TALANG'?'selected':''}>DANA TALANG</option>
+                        <option value="COD" ${data.keterangan==='COD'?'selected':''}>COD</option>
+                        <option value="STOCK LPK" ${data.keterangan==='STOCK LPK'?'selected':''}>STOCK LPK</option>
+                        <option value="LAINNYA" ${['LUNAS','DANA TALANG','COD','STOCK LPK'].includes(data.keterangan)?'':'selected'}>LAINNYA</option>
+                    </select>
+                </div>
+                <div class="col-span-1 text-center">
+                    <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+            `;
+            document.getElementById('items-container').appendChild(div);
+            lucide.createIcons();
+        }
+
+        function openForm(isEdit=false) {
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('form-view').classList.remove('hidden');
+            
+            // Reset Form
+            document.getElementById('edit-id').value = '';
+            document.getElementById('inp-lpk').value = '';
+            document.getElementById('inp-pic').value = '';
+            document.getElementById('inp-tanggal').valueAsDate = new Date();
+            document.getElementById('items-container').innerHTML = '';
+            
+            if(!isEdit) addItemRow(); 
+        }
+
+        function showDashboard() {
+            document.getElementById('form-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+        }
+
+        window.editItem = (id) => {
+            const data = requestsData.find(r => r.id === id);
+            if(!data) return;
+            openForm(true);
+            document.getElementById('edit-id').value = id;
+            document.getElementById('inp-lpk').value = data.lpk;
+            document.getElementById('inp-pic').value = data.pic;
+            document.getElementById('inp-tanggal').value = new Date(data.tanggal).toISOString().split('T')[0];
+            
+            JSON.parse(data.items).forEach(addItemRow);
+        };
+
+        async function submitForm() {
+            const items = [];
+            document.querySelectorAll('.item-row').forEach(row => {
+                const name = row.querySelector('.inp-name').value.toUpperCase();
+                if(name) {
+                    items.push({
+                        name: name,
+                        type: row.querySelector('.inp-type').value,
+                        iccid: row.querySelector('.inp-iccid').value.toUpperCase(),
+                        keterangan: row.querySelector('.inp-ket').value
                     });
+                }
+            });
 
-                    // Debugging Response Text (Karena GAS kadang kirim HTML Error, bukan JSON)
-                    const textResult = await response.text();
-                    console.log(`[API RAW RESPONSE]`, textResult);
+            if(items.length === 0) return Swal.fire('Gagal', 'Minimal isi 1 nama kartu', 'warning');
 
-                    let result;
-                    try {
-                        result = JSON.parse(textResult);
-                    } catch (e) {
-                        throw new Error("Gagal terhubung ke server. Respons bukan JSON valid (Cek Deployment). Raw: " + textResult.substring(0, 50));
-                    }
+            const payload = {
+                lpk: document.getElementById('inp-lpk').value.toUpperCase(),
+                pic: document.getElementById('inp-pic').value.toUpperCase(),
+                tanggal: document.getElementById('inp-tanggal').value,
+                penerima: document.getElementById('inp-penerima').value,
+                menyetujui: document.getElementById('inp-menyetujui').value,
+                mengetahui: document.getElementById('inp-mengetahui').value,
+                items: JSON.stringify(items)
+            };
 
-                    if (!result.success) {
-                        throw new Error(result.message || 'Server error unknown');
-                    }
+            const editId = document.getElementById('edit-id').value;
+            const action = editId ? 'updateRequest' : 'submitRequest';
+            if(editId) payload.id = editId;
 
-                    return result.data;
+            if(await api(action, payload)) {
+                Swal.fire('Berhasil', 'Data disimpan', 'success');
+                showDashboard();
+                loadData();
+            }
+        }
+
+        window.deleteItem = async (id) => {
+            if((await Swal.fire({title:'Hapus Data?', text:'Tidak bisa dikembalikan', icon:'warning', showCancelButton:true})).isConfirmed) {
+                if(await api('deleteRequest', {id})) {
+                    Swal.fire('Terhapus', '', 'success');
+                    loadData();
+                }
+            }
+        }
+
+        /* =============================================================
+           PDF GENERATOR LOGIC (UPDATED)
+           =============================================================
+        */
+        
+        async function generatePDF(data) {
+            toggleLoader(true);
+            try {
+                const { jsPDF } = window.jspdf;
+                const orientation = "portrait";
+                const pdf = new jsPDF({
+                    orientation: orientation,
+                    unit: "pt",
+                    format: "a4"
+                });
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+
+                // === TEMA UNGU ===
+                const purple = [120, 55, 200];     // Ungu elegan
+                const purpleDark = [90, 40, 160];  // Ungu gelap untuk variasi
+
+                // 1. BORDER RESMI — UBAH WARNA JADI UNGU
+                pdf.setDrawColor(...purple);
+                pdf.setLineWidth(1.5);
+                pdf.rect(20, 20, pageWidth - 40, pageHeight - 40);
+
+                // 2. LOGO POJOK KANAN ATAS
+                const logoUrl = "./assets/logo.png";
+                try {
+                    const img = await fetch(logoUrl)
+                        .then(r => {
+                            if (!r.ok) throw new Error("Gagal mengambil file gambar");
+                            return r.blob();
+                        })
+                        .then(b => new Promise(resolve => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.readAsDataURL(b);
+                        }));
+
+                    // --- PENGATURAN UKURAN AGAR TIDAK GEPENG ---
+                    // Kita tentukan lebarnya saja (misal: 50 unit), tingginya akan hitung otomatis
+                    const myLogoWidth = 100; 
+                    const myLogoHeight = myLogoWidth * (186 / 700); // Rumus: Lebar * (TinggiAsli / LebarAsli)
+
+                    // Posisi X dan Y
+                    const xPosition = pageWidth - myLogoWidth - 50; // Geser ke kanan (dikurangi margin 10)
+                    const yPosition = 50; // Margin atas
+
+                    // Masukkan variabel ukuran tadi ke fungsi addImage
+                    pdf.addImage(img, "PNG", xPosition, yPosition, myLogoWidth, myLogoHeight); 
 
                 } catch (error) {
-                    console.error('[API ERROR]', error);
-                    
-                    // Tampilkan SweetAlert khusus Error
-                    let errorMsg = error.message;
-                    if(errorMsg.includes("Failed to fetch")) {
-                        errorMsg = "Koneksi gagal. Cek internet atau URL Script.";
-                    }
-                    
-                    Utils.showAlert('Terjadi Kesalahan', errorMsg, 'error');
-                    return null;
-                } finally {
-                    Utils.toggleLoader(false);
-                }
-            },
-
-            async login(username, password) {
-                return await this.call('login', { username, password });
-            },
-
-            async getRequests() {
-                return await this.call('getRequests');
-            },
-
-            async submitRequest(data) {
-                return await this.call('submitRequest', data);
-            },
-
-            async updateRequest(data) {
-                return await this.call('updateRequest', data);
-            },
-
-            async deleteRequest(id) {
-                return await this.call('deleteRequest', { id });
-            },
-
-            async getHistory() {
-                return await this.call('getHistory');
-            }
-        };
-
-        // ==================== THEME MANAGEMENT ====================
-        const ThemeManager = {
-            init() {
-                // Set listener dulu
-                const toggleBtn = document.getElementById('theme-toggle');
-                if(toggleBtn) {
-                    toggleBtn.addEventListener('click', () => this.toggle());
-                }
-                // Apply theme saat load
-                this.applyTheme(AppState.theme);
-            },
-
-            toggle() {
-                AppState.theme = AppState.theme === 'light' ? 'dark' : 'light';
-                this.applyTheme(AppState.theme);
-                localStorage.setItem('jp-smart-theme', AppState.theme);
-            },
-
-            applyTheme(theme) {
-                // 1. Set atribut HTML
-                document.documentElement.setAttribute('data-theme', theme);
-                
-                // 2. PERBAIKAN: Jangan cari tag 'i', tapi ambil button parent-nya
-                const btn = document.getElementById('theme-toggle');
-                if (btn) {
-                    // Reset isi button dengan tag <i> baru sesuai tema
-                    // Lucide akan mengubah tag <i> ini menjadi <svg> nanti
-                    const iconName = theme === 'light' ? 'moon' : 'sun';
-                    btn.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5 text-slate-600"></i>`;
-                    
-                    // 3. Render ulang icon (karena kita baru saja memasukkan HTML string baru)
-                    if(window.lucide) {
-                        lucide.createIcons();
-                    }
-                }
-            }
-        };
-
-        // ==================== AUTHENTICATION ====================
-        const Auth = {
-            async login() {
-                const username = document.getElementById('username').value.trim();
-                const password = document.getElementById('password').value.trim();
-                const errorEl = document.getElementById('login-error');
-                
-                errorEl.textContent = ''; // Reset text error kecil
-
-                if (!username || !password) {
-                    errorEl.textContent = 'Username dan password wajib diisi';
-                    Utils.showToast('Isi username dan password!', 'warning');
-                    return;
+                    console.log("Logo gagal dimuat. Pastikan menggunakan Local Server (Live Server):", error);
                 }
 
-                // Panggil API Login
-                const data = await API.login(username, password);
-                
-                if (data) {
-                    // Login Sukses
-                    AppState.currentUser = data;
-                    sessionStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(data));
-                    this.showApp();
-                    
-                    // SweetAlert Sukses
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil Masuk!',
-                        text: `Selamat datang, ${data.username}`,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
-                // Jika gagal, API.call sudah menghandle alert errornya
-            },
-
-            logout() {
-                AppState.currentUser = null;
-                sessionStorage.removeItem(CONFIG.SESSION_KEY);
-                DOM.appSection.classList.add('hidden');
-                DOM.loginSection.classList.remove('hidden');
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
-                Utils.showToast('Berhasil keluar', 'success');
-            },
-
-            showApp() {
-                DOM.loginSection.classList.add('hidden');
-                DOM.appSection.classList.remove('hidden');
-                
-                if(DOM.userDisplay && AppState.currentUser) {
-                    DOM.userDisplay.textContent = AppState.currentUser.username;
-                }
-
-                const isAdmin = AppState.currentUser && AppState.currentUser.role === 'superadmin';
-                const historySection = document.getElementById('history-section');
-                if(historySection) historySection.classList.toggle('hidden', !isAdmin);
-                
-                const titleEl = document.getElementById('dashboard-title');
-                if(titleEl) titleEl.textContent = isAdmin ? 'Semua Permohonan' : 'Permohonan Saya';
-
-                Dashboard.load();
-                View.show('dashboard');
-            },
-
-            checkSession() {
-                const savedUser = sessionStorage.getItem(CONFIG.SESSION_KEY);
-                if (savedUser) {
-                    try {
-                        AppState.currentUser = JSON.parse(savedUser);
-                        this.showApp();
-                    } catch(e) {
-                        console.error("Session invalid");
-                        sessionStorage.removeItem(CONFIG.SESSION_KEY);
-                    }
-                }
-            }
-        };
-
-        // ==================== VIEW MANAGEMENT ====================
-        const View = {
-            show(view) {
-                DOM.dashboardSection.classList.add('hidden');
-                DOM.formSection.classList.add('hidden');
-
-                if (view === 'dashboard') {
-                    DOM.dashboardSection.classList.remove('hidden');
-                } else if (view === 'form') {
-                    DOM.formSection.classList.remove('hidden');
-                }
-
-                if(window.lucide) lucide.createIcons();
-            }
-        };
-
-        // ==================== DASHBOARD ====================
-        const Dashboard = {
-            async load() {
-                const requests = await API.getRequests();
-                if (requests) {
-                    AppState.allRequests = requests;
-                    AppState.filteredRequests = requests;
-                    this.renderStats();
-                    this.renderTable();
-                }
-
-                if (AppState.currentUser && AppState.currentUser.role === 'superadmin') {
-                    const history = await API.getHistory();
-                    if (history) this.renderHistory(history);
-                }
-            },
-
-            renderStats() {
-                const total = AppState.allRequests.length;
-                const thisMonth = AppState.allRequests.filter(r => {
-                    const date = new Date(r.tanggal);
-                    const now = new Date();
-                    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-                }).length;
-
-                const totalItems = AppState.allRequests.reduce((sum, r) => {
-                    try {
-                        return sum + JSON.parse(r.items).length;
-                    } catch(e) { return sum; }
-                }, 0);
-
-                const stats = [
-                    { label: 'Total Permohonan', value: total, icon: 'file-text', color: 'from-blue-500 to-blue-600' },
-                    { label: 'Bulan Ini', value: thisMonth, icon: 'calendar', color: 'from-purple-500 to-purple-600' },
-                    { label: 'Total Kartu', value: totalItems, icon: 'credit-card', color: 'from-green-500 to-green-600' },
-                    { label: 'Status', value: 'Aktif', icon: 'check-circle', color: 'from-amber-500 to-amber-600' }
-                ];
-
-                if(DOM.statsContainer) {
-                    DOM.statsContainer.innerHTML = stats.map(stat => `
-                        <div class="stat-card bg-gradient-to-br ${stat.color}">
-                            <div class="flex items-center justify-between mb-2">
-                                <i data-lucide="${stat.icon}" class="w-8 h-8 opacity-80"></i>
-                                <span class="text-3xl font-bold">${stat.value}</span>
-                            </div>
-                            <p class="text-sm font-medium opacity-90">${stat.label}</p>
-                        </div>
-                    `).join('');
-                }
-
-                if(window.lucide) lucide.createIcons();
-            },
-
-            renderTable() {
-                const { currentPage, itemsPerPage, filteredRequests } = AppState;
-                const start = (currentPage - 1) * itemsPerPage;
-                const end = start + itemsPerPage;
-                const paginatedData = filteredRequests.slice(start, end);
-
-                if (paginatedData.length === 0) {
-                    DOM.requestsTableBody.innerHTML = `
-                        <tr><td colspan="7" class="py-12 text-center text-slate-500">
-                            <div class="flex flex-col items-center">
-                                <i data-lucide="inbox" class="w-12 h-12 mb-2 text-slate-300"></i>
-                                <p>Tidak ada data</p>
-                            </div>
-                        </td></tr>
-                    `;
-                    if(window.lucide) lucide.createIcons();
-                    return;
-                }
-
-                const isAdmin = AppState.currentUser.role === 'superadmin';
-                DOM.requestsTableBody.innerHTML = paginatedData.map(req => {
-                    let items = [];
-                    try { items = JSON.parse(req.items); } catch(e) { items = []; }
-                    
-                    return `
-                        <tr class="border-b border-slate-200 hover:bg-indigo-50/50 transition-colors">
-                            <td class="py-3 px-4">
-                                <span class="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">${req.id}</span>
-                            </td>
-                            <td class="py-3 px-4 font-medium text-slate-900">${req.lpk}</td>
-                            <td class="py-3 px-4 text-slate-600">${req.pic}</td>
-                            <td class="py-3 px-4 text-slate-600 text-sm">${Utils.formatDate(req.tanggal)}</td>
-                            <td class="py-3 px-4">
-                                <span class="badge bg-indigo-100 text-indigo-700">${req.submitted_by}</span>
-                            </td>
-                            <td class="py-3 px-4">
-                                <span class="font-semibold text-indigo-600">${items.length}</span>
-                            </td>
-                            <td class="py-3 px-4">
-                                <div class="flex items-center justify-center gap-2">
-                                    <button onclick="Dashboard.viewPDF('${req.id}')" 
-                                        class="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors" 
-                                        title="Lihat PDF">
-                                        <i data-lucide="file-text" class="w-4 h-4"></i>
-                                    </button>
-                                    ${isAdmin ? `
-                                        <button onclick="FormHandler.openEdit('${req.id}')" 
-                                            class="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-600 transition-colors" 
-                                            title="Edit">
-                                            <i data-lucide="edit" class="w-4 h-4"></i>
-                                        </button>
-                                        <button onclick="Dashboard.deleteRequest('${req.id}')" 
-                                            class="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors" 
-                                            title="Hapus">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        </button>
-                                    ` : ''}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-
-                this.renderPagination();
-                if(window.lucide) lucide.createIcons();
-            },
-
-            renderPagination() {
-                const { currentPage, itemsPerPage, filteredRequests } = AppState;
-                const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
-                const start = filteredRequests.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-                const end = Math.min(currentPage * itemsPerPage, filteredRequests.length);
-
-                const showingRange = document.getElementById('showing-range');
-                const totalItems = document.getElementById('total-items');
-                if(showingRange) showingRange.textContent = `${start}-${end}`;
-                if(totalItems) totalItems.textContent = filteredRequests.length;
-
-                const prevBtn = document.getElementById('prev-page');
-                const nextBtn = document.getElementById('next-page');
-                if(prevBtn) prevBtn.disabled = currentPage === 1;
-                if(nextBtn) nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-
-                // Simple pagination numbers
-                const pageNumbersContainer = document.getElementById('page-numbers');
-                if(pageNumbersContainer) {
-                    pageNumbersContainer.innerHTML = '';
-                    // Logic sederhana: tampilkan current page saja agar tidak ribet
-                    const btn = document.createElement('button');
-                    btn.textContent = `${currentPage} / ${totalPages || 1}`;
-                    btn.className = `px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 text-slate-600`;
-                    btn.disabled = true;
-                    pageNumbersContainer.appendChild(btn);
-                }
-            },
-
-            goToPage(page) {
-                AppState.currentPage = page;
-                this.renderTable();
-            },
-
-            nextPage() {
-                const totalPages = Math.ceil(AppState.filteredRequests.length / AppState.itemsPerPage);
-                if (AppState.currentPage < totalPages) {
-                    AppState.currentPage++;
-                    this.renderTable();
-                }
-            },
-
-            prevPage() {
-                if (AppState.currentPage > 1) {
-                    AppState.currentPage--;
-                    this.renderTable();
-                }
-            },
-
-            renderHistory(history) {
-                if (!DOM.historyTableBody) return;
-                
-                if (!history || history.length === 0) {
-                    DOM.historyTableBody.innerHTML = `
-                        <tr><td colspan="4" class="py-8 text-center text-slate-500">Tidak ada riwayat</td></tr>
-                    `;
-                    return;
-                }
-
-                DOM.historyTableBody.innerHTML = history.map(log => `
-                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
-                        <td class="py-3 px-4 text-sm text-slate-600">${Utils.formatDateTime(log.timestamp)}</td>
-                        <td class="py-3 px-4">
-                            <span class="badge bg-indigo-100 text-indigo-700">${log.user}</span>
-                        </td>
-                        <td class="py-3 px-4 font-medium text-slate-900">${log.action}</td>
-                        <td class="py-3 px-4 text-sm text-slate-500">${log.details}</td>
-                    </tr>
-                `).join('');
-            },
-
-            viewPDF(id) {
-                const request = AppState.allRequests.find(r => r.id === id);
-                if (request) PDFGenerator.generate(request, false);
-            },
-
-            async deleteRequest(id) {
-                const result = await Swal.fire({
-                    title: 'Konfirmasi Hapus',
-                    text: `Yakin ingin menghapus permohonan ${id}?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#ef4444',
-                    cancelButtonColor: '#64748b',
-                    confirmButtonText: 'Ya, Hapus',
-                    cancelButtonText: 'Batal'
-                });
-
-                if (result.isConfirmed) {
-                    if (await API.deleteRequest(id)) {
-                        Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success');
-                        this.load();
-                    }
-                }
-            },
-
-            filterAndSort() {
-                let filtered = [...AppState.allRequests];
-
-                // Apply search filter
-                if (AppState.searchQuery) {
-                    const query = AppState.searchQuery.toLowerCase();
-                    filtered = filtered.filter(req => 
-                        req.id.toLowerCase().includes(query) ||
-                        req.lpk.toLowerCase().includes(query) ||
-                        req.pic.toLowerCase().includes(query) ||
-                        req.submitted_by.toLowerCase().includes(query)
-                    );
-                }
-
-                // Apply sorting
-                if (AppState.sortBy) {
-                    filtered.sort((a, b) => {
-                        let aVal = a[AppState.sortBy];
-                        let bVal = b[AppState.sortBy];
-
-                        if (AppState.sortBy === 'tanggal') {
-                            aVal = new Date(aVal);
-                            bVal = new Date(bVal);
-                        }
-
-                        if (aVal < bVal) return AppState.sortOrder === 'asc' ? -1 : 1;
-                        if (aVal > bVal) return AppState.sortOrder === 'asc' ? 1 : -1;
-                        return 0;
-                    });
-                }
-
-                AppState.filteredRequests = filtered;
-                AppState.currentPage = 1;
-                this.renderTable();
-            },
-
-            setupSorting() {
-                document.querySelectorAll('[data-sort]').forEach(th => {
-                    th.addEventListener('click', () => {
-                        const field = th.dataset.sort;
-                        if (AppState.sortBy === field) {
-                            AppState.sortOrder = AppState.sortOrder === 'asc' ? 'desc' : 'asc';
-                        } else {
-                            AppState.sortBy = field;
-                            AppState.sortOrder = 'asc';
-                        }
-                        this.filterAndSort();
-                    });
-                });
-            }
-        };
-
-        // ==================== FORM HANDLER ====================
-        const FormHandler = {
-            init() {
-                this.addItem(); // Add first item
-                const addBtn = document.getElementById('add-item-btn');
-                if(addBtn) addBtn.addEventListener('click', () => this.addItem());
-                
-                const submitBtn = document.getElementById('submit-request-btn');
-                if(submitBtn) submitBtn.addEventListener('click', () => this.submit());
-                
-                const updateBtn = document.getElementById('update-request-btn');
-                if(updateBtn) updateBtn.addEventListener('click', () => this.update());
-            },
-
-            reset() {
-                document.getElementById('form-edit-id').value = '';
-                document.getElementById('form-lpk').value = '';
-                document.getElementById('form-pic').value = '';
-                document.getElementById('form-tanggal').valueAsDate = new Date();
-                
-                DOM.itemsContainer.innerHTML = '';
-                this.addItem();
-
-                document.getElementById('submit-request-btn').classList.remove('hidden');
-                document.getElementById('update-request-btn').classList.add('hidden');
-
-                View.show('form');
-            },
-
-            openEdit(id) {
-                const request = AppState.allRequests.find(r => r.id === id);
-                if (!request) return;
-
-                document.getElementById('form-edit-id').value = request.id;
-                document.getElementById('form-lpk').value = request.lpk;
-                document.getElementById('form-pic').value = request.pic;
-                document.getElementById('form-tanggal').value = new Date(request.tanggal).toISOString().split('T')[0];
-                document.getElementById('form-penerima').value = request.penerima;
-                document.getElementById('form-menyetujui').value = request.menyetujui;
-                document.getElementById('form-mengetahui').value = request.mengetahui;
-
-                DOM.itemsContainer.innerHTML = '';
-                try {
-                    const items = JSON.parse(request.items);
-                    items.forEach(item => this.addItem(item.name, item.type, item.iccid));
-                } catch(e) { console.error("Error parsing items", e); }
-
-                document.getElementById('submit-request-btn').classList.add('hidden');
-                document.getElementById('update-request-btn').classList.remove('hidden');
-
-                View.show('form');
-            },
-
-            addItem(name = '', type = 'CALL SIM', iccid = '') {
-                const row = document.createElement('div');
-                row.className = 'flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-3 bg-slate-50 rounded-xl item-row animate-fade-in';
-                row.innerHTML = `
-                    <input type="text" placeholder="Nama *" value="${name}"
-                        class="uppercase-input input-field flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 item-name">
-                    <select class="input-field w-full sm:w-40 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 item-type">
-                        <option ${type === 'CALL SIM' ? 'selected' : ''}>CALL SIM</option>
-                        <option ${type === 'DATA SIM' ? 'selected' : ''}>DATA SIM</option>
-                    </select>
-                    <input type="text" placeholder="ICCID (Opsional)" value="${iccid}"
-                        class="uppercase-input input-field flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 item-iccid">
-                    <button type="button" class="btn bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-all self-center" 
-                        onclick="this.parentElement.remove()">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                `;
-                DOM.itemsContainer.appendChild(row);
-                if(window.lucide) lucide.createIcons();
-            },
-
-            getFormData() {
-                const lpk = document.getElementById('form-lpk').value.trim().toUpperCase();
-                const pic = document.getElementById('form-pic').value.trim().toUpperCase();
-                const tanggal = document.getElementById('form-tanggal').value;
-
-                if (!lpk || !pic || !tanggal) {
-                    Utils.showToast('LPK, PIC, dan Tanggal wajib diisi', 'warning');
-                    return null;
-                }
-
-                const items = [];
-                document.querySelectorAll('.item-row').forEach(row => {
-                    const name = row.querySelector('.item-name').value.trim().toUpperCase();
-                    const type = row.querySelector('.item-type').value;
-                    const iccid = row.querySelector('.item-iccid').value.trim().toUpperCase();
-                    if (name) {
-                        items.push({ name, type, iccid });
-                    }
-                });
-
-                if (items.length === 0) {
-                    Utils.showToast('Minimal harus ada satu nama', 'warning');
-                    return null;
-                }
-
-                return {
-                    id: document.getElementById('form-edit-id').value,
-                    lpk,
-                    pic,
-                    tanggal,
-                    items: JSON.stringify(items),
-                    penerima: document.getElementById('form-penerima').value,
-                    menyetujui: document.getElementById('form-menyetujui').value,
-                    mengetahui: document.getElementById('form-mengetahui').value
-                };
-            },
-
-            async submit() {
-                const formData = this.getFormData();
-                if (!formData) return;
-
-                if (await API.submitRequest(formData)) {
-                    Swal.fire('Berhasil!', 'Permohonan telah dikirim', 'success');
-                    Auth.showApp();
-                }
-            },
-
-            async update() {
-                const formData = this.getFormData();
-                if (!formData) return;
-
-                if (await API.updateRequest(formData)) {
-                    Swal.fire('Berhasil!', 'Data telah diperbarui', 'success');
-                    Auth.showApp();
-                }
-            }
-        };
-
-        // ==================== PDF GENERATOR ====================
-        const PDFGenerator = {
-            generate(data, autoDownload = true) {
-                // ... (Kode PDF Anda sudah bagus, biarkan sama)
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF("p", "mm", "a4");
-                let items = [];
-                try { items = JSON.parse(data.items); } catch(e) { items = []; }
-
-                const tableData = items.map((item, index) => [
-                    index + 1,
-                    item.name,
-                    item.type,
-                    item.iccid || '-'
-                ]);
-
-                // Watermark
-                doc.setTextColor(220, 220, 220);
-                doc.setFontSize(60);
-                doc.setFont("helvetica", "bold");
-                doc.text("JP SMART", 105, 150, { angle: 45, align: "center" });
-
-                // Header
-                doc.setTextColor(30, 30, 30);
-                doc.setFontSize(20);
-                doc.setFont("helvetica", "bold");
-                doc.text("FORM PERMOHONAN KARTU KELUAR", 105, 20, { align: "center" });
-
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "normal");
-                doc.setTextColor(80, 80, 80);
-                doc.text("JAPANINDO TRAVEL CONNECTION", 105, 28, { align: "center" });
-
-                doc.setDrawColor(79, 70, 229);
-                doc.setLineWidth(0.8);
-                doc.line(15, 33, 195, 33);
-
-                // Metadata
-                const metaY = 43;
-                doc.setFontSize(11);
-                doc.setTextColor(0, 0, 0);
-                doc.setFont("helvetica", "bold");
-
-                const metadata = [
-                    ["ID", data.id],
-                    ["LPK", data.lpk],
-                    ["PIC", data.pic],
-                    ["TANGGAL KIRIM", Utils.formatDate(data.tanggal)]
-                ];
-
-                let currentY = metaY;
-                metadata.forEach(([label, value]) => {
-                    doc.text(`${label}:`, 15, currentY);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(String(value), 60, currentY);
-                    doc.setFont("helvetica", "bold");
-                    currentY += 7;
-                });
-
-                // Table
-                doc.autoTable({
-                    head: [['No.', 'NAMA', 'TYPE KARTU', 'ICCID']],
-                    body: tableData,
-                    startY: currentY + 5,
-                    theme: 'grid',
-                    styles: {
-                        font: "helvetica",
-                        fontSize: 10,
-                        cellPadding: 4,
-                        overflow: 'linebreak'
+                // 3. HEADER SURAT RESMI — TAMBAH WARNA UNGU
+                pdf.setFont("Helvetica", "bold");
+                pdf.setFontSize(18);
+                pdf.setTextColor(...purple);
+                pdf.text("FORM PERMOHONAN KARTU KELUAR", 40, 70);
+
+                pdf.setFontSize(12);
+                pdf.setFont("Helvetica", "normal");
+                pdf.setTextColor(50); // Abu-abu gelap
+                pdf.text("PERMOHONAN KARTU RESMI", 40, 90);
+
+                // Garis ungu
+                pdf.setDrawColor(...purple);
+                pdf.line(40, 100, pageWidth - 40, 100);
+
+                // 4. DATA PEMOHON
+                pdf.setFontSize(12);
+                pdf.setFont("Helvetica", "bold");
+                pdf.setTextColor(...purpleDark);
+                pdf.text("Data Pemohon:", 40, 130);
+
+                pdf.setFont("Helvetica", "normal");
+                pdf.setTextColor(20);
+                pdf.text(`LPK                   : ${data.lpk}`, 40, 150);
+                pdf.text(`PIC                   : ${data.pic}`, 40, 170);
+                pdf.text(`TANGGAL       : ${data.tanggal}`, 40, 190);
+
+                // 5. TABLE KARTU — UBAH TEMA HEADER UNGU
+                const tableBody = data.items.map((item, i) => ([
+                    i + 1,
+                    item.nama,
+                    item.tipe,
+                    item.iccid,
+                    item.keterangan || "-"
+                ]));
+
+                pdf.autoTable({
+                    startY: 220,
+                    head: [["No", "Nama", "Tipe", "ICCID", "Keterangan"]],
+                    body: tableBody,
+                    styles: { 
+                        fontSize: 9,
+                        cellPadding: 5
                     },
-                    headStyles: {
-                        fillColor: [79, 70, 229],
-                        textColor: [255, 255, 255],
-                        fontStyle: 'bold',
-                        halign: 'center'
+                    headStyles: { 
+                        fillColor: purple,
+                        textColor: 255,
+                        lineWidth: 0.5,
+                        lineColor: purpleDark
                     },
-                    bodyStyles: { 
-                        fillColor: [248, 250, 252],
-                        textColor: [30, 30, 30]
-                    },
-                    alternateRowStyles: { 
-                        fillColor: [255, 255, 255] 
-                    },
-                    columnStyles: {
-                        0: { cellWidth: 15, halign: 'center' },
-                        1: { cellWidth: 70 },
-                        2: { cellWidth: 35, halign: 'center' },
-                        3: { cellWidth: 'auto' }
-                    }
+                    margin: { left: 40, right: 40 }
                 });
 
-                // Signatures
-                const finalY = doc.lastAutoTable.finalY || doc.autoTable.previous.finalY;
-                const signY = finalY + 30;
+                let finalY = pdf.lastAutoTable.finalY + 30;
 
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "bold");
-                
-                doc.text('Penerima', 35, signY, { align: 'center' });
-                doc.text('Menyetujui', 105, signY, { align: 'center' });
-                doc.text('Mengetahui', 175, signY, { align: 'center' });
+                // 6. FOOTER TANDA TANGAN — WARNA UNGU
+                pdf.setFont("Helvetica", "bold");
+                pdf.setTextColor(...purpleDark);
+                pdf.text("Penerima:", 40, finalY + 20);
+                pdf.text("Menyetujui:", pageWidth / 2 - 40, finalY + 20);
+                pdf.text("Mengetahui:", pageWidth - 200, finalY + 20);
 
-                doc.setFont("helvetica", "normal");
-                doc.text(`(${data.penerima || '...'})`, 35, signY + 25, { align: 'center' });
-                doc.text(`(${data.menyetujui || '...'})`, 105, signY + 25, { align: 'center' });
-                doc.text(`(${data.mengetahui || '...'})`, 175, signY + 25, { align: 'center' });
+                pdf.setFont("Helvetica", "normal");
+                pdf.setTextColor(20);
+                pdf.text(data.penerima, 40, finalY + 90);
+                pdf.text(data.menyetujui, pageWidth / 2 - 40, finalY + 90);
+                pdf.text(data.mengetahui, pageWidth - 200, finalY + 90);
 
-                // Footer
-                doc.setFontSize(9);
-                doc.setTextColor(120, 120, 120);
-                doc.text("Generated by JP SMART System", 105, 285, { align: "center" });
-                doc.text(new Date().toLocaleDateString('id-ID'), 105, 290, { align: "center" });
-
-                if (autoDownload) {
-                    doc.save(`Permohonan-${data.id}.pdf`);
-                } else {
-                    doc.output('dataurlnewwindow');
-                }
+                // 7. SAVE PDF
+                pdf.save(`Permohonan-${data.lpk}-${data.tanggal}.pdf`);
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error PDF", "Gagal membuat PDF", "error");
+            } finally {
+                toggleLoader(false);
             }
-        };
-
-        // ==================== SEARCH HANDLER ====================
-        const SearchHandler = {
-            init() {
-                const debouncedSearch = Utils.debounce((query) => {
-                    AppState.searchQuery = query;
-                    Dashboard.filterAndSort();
-                }, 300);
-
-                if(DOM.searchInput) {
-                    DOM.searchInput.addEventListener('input', (e) => {
-                        debouncedSearch(e.target.value);
-                    });
-                }
-            }
-        };
-
-        // ==================== EVENT LISTENERS ====================
-        function initEventListeners() {
-            // Login
-            const loginBtn = document.getElementById('login-btn');
-            if(loginBtn) loginBtn.addEventListener('click', () => Auth.login());
-            
-            const passInput = document.getElementById('password');
-            if(passInput) {
-                passInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') Auth.login();
-                });
-            }
-
-            // Logout
-            const logoutBtn = document.getElementById('logout-btn');
-            if(logoutBtn) logoutBtn.addEventListener('click', () => Auth.logout());
-
-            // Navigation
-            const showFormBtn = document.getElementById('show-form-btn');
-            if(showFormBtn) showFormBtn.addEventListener('click', () => FormHandler.reset());
-            
-            const backBtn = document.getElementById('back-to-dashboard-btn');
-            if(backBtn) backBtn.addEventListener('click', () => View.show('dashboard'));
-
-            // Pagination
-            const prevBtn = document.getElementById('prev-page');
-            if(prevBtn) prevBtn.addEventListener('click', () => Dashboard.prevPage());
-            
-            const nextBtn = document.getElementById('next-page');
-            if(nextBtn) nextBtn.addEventListener('click', () => Dashboard.nextPage());
-
-            // Refresh
-            const refreshBtn = document.getElementById('refresh-btn');
-            if(refreshBtn) refreshBtn.addEventListener('click', () => Dashboard.load());
         }
 
-        // ==================== INITIALIZATION ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            if(window.lucide) lucide.createIcons();
-            ThemeManager.init();
-            initEventListeners();
-            SearchHandler.init();
-            Dashboard.setupSorting();
-            FormHandler.init();
-            Auth.checkSession();
-        });
+
+        // --- ADAPTER FUNCTION FOR TABLE BUTTON ---
+        window.printPDF = async (id) => {
+            const r = requestsData.find(x => x.id === id);
+            if (!r) return;
+
+            let itemsArr = [];
+            try { itemsArr = JSON.parse(r.items); } catch(e){}
+
+            // Mapping data dari Database (requestsData) ke format yang diminta generatePDF
+            const pdfData = {
+                lpk: r.lpk,
+                pic: r.pic,
+                tanggal: new Date(r.tanggal).toLocaleDateString('id-ID'),
+                items: itemsArr.map(i => ({
+                    nama: i.name,         // DB: name -> PDF: nama
+                    tipe: i.type,         // DB: type -> PDF: tipe
+                    iccid: i.iccid,
+                    keterangan: i.keterangan
+                })),
+                penerima: r.penerima || "HEGAR",
+                menyetujui: r.menyetujui || "HANNA",
+                mengetahui: r.mengetahui || "PAK NOVI"
+            };
+
+            await generatePDF(pdfData);
+        };
+
+        // Check Login
+        const sess = sessionStorage.getItem('jp_user');
+        if(sess) { currentUser = JSON.parse(sess); initApp(); }
     </script>
 </body>
 </html>
