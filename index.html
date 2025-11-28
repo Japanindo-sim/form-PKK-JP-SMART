@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JP SMART - Sistem Permohonan Kartu</title>
+    <title>Japan Indo - Sistem Permohonan Kartu</title>
     
+    <!-- Framework & Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -13,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .uppercase-input { text-transform: uppercase; }
         .loader {
             border: 3px solid #f3f3f3; border-top: 3px solid #4f46e5;
@@ -27,94 +28,161 @@
 </head>
 <body class="text-slate-800">
 
-    <div id="app" class="max-w-7xl mx-auto p-4 lg:p-6">
+    <div id="app" class="max-w-[1400px] mx-auto p-4">
 
-        <div id="login-section" class="min-h-[80vh] flex items-center justify-center">
+        <!-- LOGIN SECTION -->
+        <div id="login-section" class="min-h-[90vh] flex items-center justify-center">
             <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
                 <div class="text-center mb-8">
                     <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i data-lucide="shield-check" class="text-indigo-600 h-8 w-8"></i>
                     </div>
-                    <h1 class="text-2xl font-bold text-slate-900">JP SMART LOGIN</h1>
+                    <h1 class="text-2xl font-bold text-slate-900">Japan Indo Login</h1>
+                    <p class="text-slate-500 text-sm mt-2">Sistem Manajemen Kartu Keluar</p>
                 </div>
                 <div class="space-y-4">
-                    <input type="text" id="username" placeholder="Username" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                    <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    <input type="text" id="username" placeholder="Username" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition bg-slate-50 focus:bg-white">
+                    <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition bg-slate-50 focus:bg-white">
                     <button id="login-btn" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-semibold transition shadow-lg shadow-indigo-200">Masuk Aplikasi</button>
                 </div>
             </div>
         </div>
 
-        <div id="app-section" class="hidden">
+        <!-- APP SECTION -->
+        <div id="app-section" class="hidden space-y-6">
             
-            <nav class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6 sticky top-2 z-30">
-                <div class="flex items-center gap-3 mb-4 md:mb-0">
-                    <div class="bg-indigo-600 text-white p-2 rounded-lg"><i data-lucide="card-sim" class="h-5 w-5"></i></div>
-                    <div>
-                        <h1 class="font-bold text-lg text-slate-800">Dashboard - Permohonan Kartu Keluar</h1>
-                        <p class="text-xs text-slate-500">Halo, <span id="user-display" class="font-bold text-indigo-600"></span></p>
+            <!-- Navbar -->
+            <nav class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 sticky top-2 z-30">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="bg-indigo-600 text-white p-2.5 rounded-lg shadow-md shadow-indigo-200"><i data-lucide="card-sim" class="h-6 w-6"></i></div>
+                        <div>
+                            <h1 class="font-bold text-xl text-slate-800">Dashboard - Permohonan Kartu Keluar</h1>
+                            <p class="text-xs text-slate-500">Welcome back, <span id="user-display" class="font-bold text-indigo-600"></span></p>
+                        </div>
                     </div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openForm()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-md shadow-indigo-100">
-                        <i data-lucide="plus-circle" class="h-4 w-4"></i> Buat Permohonan
-                    </button>
-                    <button onclick="handleLogout()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition">
-                        <i data-lucide="log-out" class="h-4 w-4"></i> Keluar
-                    </button>
+                    
+                    <!-- ACTION BUTTONS -->
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                        <!-- 1. Tombol Contact Developer (NEW) -->
+                        <button onclick="showContact()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-lg text-sm font-medium transition border border-slate-200 shadow-sm">
+                            <i data-lucide="life-buoy" class="h-4 w-4"></i> <span class="hidden sm:inline">Contact Dev</span>
+                        </button>
+
+                        <!-- 2. Tombol Buat Permohonan -->
+                        <button onclick="openForm()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition shadow-md shadow-indigo-100">
+                            <i data-lucide="plus-circle" class="h-4 w-4"></i> Buat Permohonan
+                        </button>
+
+                        <!-- 3. Tombol Logout -->
+                        <button onclick="handleLogout()" class="flex items-center justify-center bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 px-3 py-2.5 rounded-lg transition shadow-sm" title="Logout">
+                            <i data-lucide="log-out" class="h-4 w-4"></i>
+                        </button>
+                    </div>
                 </div>
             </nav>
 
             <div id="dashboard-view" class="space-y-6">
                 
+                <!-- STATISTICS CARDS -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
-                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="sim-card" class="h-16 w-16 text-indigo-600"></i></div>
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Kartu Keluar</h3>
-                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-total-all">0</div>
-                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
-                            <span class="text-blue-600 bg-blue-50 px-2 py-1 rounded">Call: <b id="stat-total-call">0</b></span>
-                            <span class="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Data: <b id="stat-total-data">0</b></span>
+                    
+                    <!-- Total -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bulan Ini</p>
+                                <h3 class="text-sm font-bold text-slate-700 mt-1">Total Kartu</h3>
+                            </div>
+                            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="layers" class="h-5 w-5"></i></div>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800 mb-3" id="stat-total-val">0</div>
+                        <!-- Breakdown Display -->
+                        <div class="text-[10px] font-semibold text-slate-500 bg-slate-50 p-2 rounded border border-slate-100 text-center" id="stat-total-desc">
+                            CALL SIM 0 | DATA SIM 0
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
-                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="check-circle-2" class="h-16 w-16 text-green-600"></i></div>
-                        <h3 class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Status Lunas</h3>
-                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-lunas-all">0</div>
-                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
-                            <span class="text-green-600">Call: <b id="stat-lunas-call">0</b></span>
-                            <span class="text-green-600">Data: <b id="stat-lunas-data">0</b></span>
+                    <!-- Lunas -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</p>
+                                <h3 class="text-sm font-bold text-green-600 mt-1">Lunas</h3>
+                            </div>
+                            <div class="p-2 bg-green-50 text-green-600 rounded-lg"><i data-lucide="check-circle-2" class="h-5 w-5"></i></div>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800 mb-3" id="stat-lunas-val">0</div>
+                        <div class="text-[10px] font-semibold text-green-700 bg-green-50 p-2 rounded border border-green-100 text-center" id="stat-lunas-desc">
+                            CALL SIM 0 | DATA SIM 0
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
-                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="banknote" class="h-16 w-16 text-amber-500"></i></div>
-                        <h3 class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">Dana Talangan</h3>
-                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-dana-all">0</div>
-                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
-                            <span class="text-amber-600">Call: <b id="stat-dana-call">0</b></span>
-                            <span class="text-amber-600">Data: <b id="stat-dana-data">0</b></span>
+                    <!-- Dana Talangan -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</p>
+                                <h3 class="text-sm font-bold text-amber-500 mt-1">Dana Talangan</h3>
+                            </div>
+                            <div class="p-2 bg-amber-50 text-amber-500 rounded-lg"><i data-lucide="coins" class="h-5 w-5"></i></div>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800 mb-3" id="stat-dana-val">0</div>
+                        <div class="text-[10px] font-semibold text-amber-700 bg-amber-50 p-2 rounded border border-amber-100 text-center" id="stat-dana-desc">
+                            CALL SIM 0 | DATA SIM 0
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
-                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i data-lucide="truck" class="h-16 w-16 text-rose-500"></i></div>
-                        <h3 class="text-xs font-bold text-rose-500 uppercase tracking-wider mb-1">COD</h3>
-                        <div class="text-2xl font-black text-slate-800 mb-3" id="stat-cod-all">0</div>
-                        <div class="flex gap-4 text-xs font-medium border-t pt-2">
-                            <span class="text-rose-600">Call: <b id="stat-cod-call">0</b></span>
-                            <span class="text-rose-600">Data: <b id="stat-cod-data">0</b></span>
+                    <!-- COD -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden group hover:-translate-y-1 transition duration-300">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</p>
+                                <h3 class="text-sm font-bold text-rose-500 mt-1">COD</h3>
+                            </div>
+                            <div class="p-2 bg-rose-50 text-rose-500 rounded-lg"><i data-lucide="truck" class="h-5 w-5"></i></div>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800 mb-3" id="stat-cod-val">0</div>
+                        <div class="text-[10px] font-semibold text-rose-700 bg-rose-50 p-2 rounded border border-rose-100 text-center" id="stat-cod-desc">
+                            CALL SIM 0 | DATA SIM 0
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <!-- FILTER BAR -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col lg:flex-row gap-4 items-center justify-between">
+                    <div class="flex flex-col md:flex-row gap-3 w-full lg:w-auto">
+                        <select id="filter-month" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none">
+                            <option value="all">Semua Bulan</option>
+                            <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option>
+                            <option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option>
+                            <option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option>
+                            <option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
+                        </select>
+                        <select id="filter-year" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none">
+                            <option value="all">Semua Tahun</option>
+                            <!-- JS will populate years -->
+                        </select>
+                        <div class="relative w-full md:w-64">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                            <input type="text" id="filter-search" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 outline-none" placeholder="Cari Nama, LPK, ICCID...">
+                        </div>
+                    </div>
+                    
+                    <button onclick="exportFilteredCSV()" class="w-full lg:w-auto flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export CSV (Filtered)
+                    </button>
+                </div>
+
+                <!-- TABLE -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                         <h2 class="font-bold text-slate-700 flex items-center gap-2">
-                            <i data-lucide="list" class="h-4 w-4 text-indigo-500"></i> Daftar Permohonan
+                            <i data-lucide="list" class="h-4 w-4 text-indigo-500"></i> Data Permohonan
                         </h2>
-                        <div class="text-xs text-slate-400">Menampilkan 10 data per halaman</div>
+                        <span id="record-count" class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2 py-1 rounded">0 Permohonan</span>
                     </div>
                     
                     <div class="overflow-x-auto">
@@ -124,30 +192,26 @@
                                     <th class="px-6 py-3">ID & Tanggal</th>
                                     <th class="px-6 py-3">LPK & PIC</th>
                                     <th class="px-6 py-3 text-center">Jml Kartu</th>
-                                    <th class="px-6 py-3">User</th>
+                                    <th class="px-6 py-3">Info Pembayaran</th>
                                     <th class="px-6 py-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-body" class="divide-y divide-slate-100">
-                                </tbody>
+                            <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
 
+                    <!-- Pagination -->
                     <div class="p-4 border-t border-slate-100 flex justify-between items-center bg-slate-50/30" id="pagination-controls">
                         <button id="prev-btn" class="px-4 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition">Sebelumnya</button>
                         <span id="page-info" class="text-xs font-semibold text-slate-600">Halaman 1</span>
                         <button id="next-btn" class="px-4 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition">Selanjutnya</button>
                     </div>
                 </div>
-                
-                <div id="history-box" class="hidden bg-white p-5 rounded-xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-slate-700 mb-3 flex gap-2"><i data-lucide="history" class="h-4 w-4"></i> Riwayat</h3>
-                    <div class="h-40 overflow-y-auto text-xs space-y-2" id="history-list"></div>
-                </div>
             </div>
 
+            <!-- FORM MODAL (Hidden by default) -->
             <div id="form-view" class="hidden">
-                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 max-w-5xl mx-auto">
+                 <div class="bg-white rounded-2xl shadow-lg border border-slate-200 max-w-6xl mx-auto">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/30 rounded-t-2xl">
                         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="file-edit" class="text-indigo-600"></i> Form Permohonan</h2>
                         <button onclick="showDashboard()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x-circle"></i></button>
@@ -166,24 +230,26 @@
                                 <input type="text" id="inp-pic" class="w-full px-3 py-2 border rounded-lg uppercase-input focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Tanggal Kirim</label>
+                                <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Tanggal Permohonan</label>
                                 <input type="date" id="inp-tanggal" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
                             </div>
                         </div>
 
-                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                        <!-- DYNAMIC ITEMS -->
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-bold text-slate-700 text-sm">Daftar Nama Kartu</h3>
+                                <h3 class="font-bold text-slate-700 text-sm">Daftar Kartu</h3>
                                 <button onclick="addItemRow()" class="bg-white border border-indigo-200 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-50 flex items-center gap-1 shadow-sm">
                                     <i data-lucide="plus" class="w-3 h-3"></i> Tambah Baris
                                 </button>
                             </div>
                             
-                            <div class="grid grid-cols-12 gap-2 mb-2 px-2 text-xs font-bold text-slate-400 uppercase">
+                            <div class="grid grid-cols-12 gap-2 mb-2 px-2 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
                                 <div class="col-span-3">Nama</div>
                                 <div class="col-span-2">Tipe</div>
-                                <div class="col-span-3">ICCID</div>
-                                <div class="col-span-3">Keterangan</div>
+                                <div class="col-span-2">ICCID</div>
+                                <div class="col-span-2">Tgl Aktivasi</div>
+                                <div class="col-span-2">Keterangan</div>
                                 <div class="col-span-1"></div>
                             </div>
                             
@@ -193,9 +259,7 @@
                         <div class="grid grid-cols-3 gap-4 pt-4 border-t">
                             <div><label class="text-xs font-bold text-slate-500">Penerima</label><select id="inp-penerima" class="w-full mt-1 border rounded p-2 text-sm"><option>HEGAR</option><option>RIDWAN</option></select></div>
                             <div><label class="text-xs font-bold text-slate-500">Menyetujui</label><select id="inp-menyetujui" class="w-full mt-1 border rounded p-2 text-sm">
-                                <option>HANNA</option>
-                                <option>AYU</option>
-                                </select></div>
+                                <option>HANNA</option><option>AYU</option></select></div>
                             <div><label class="text-xs font-bold text-slate-500">Mengetahui</label><select id="inp-mengetahui" class="w-full mt-1 border rounded p-2 text-sm"><option>PAK NOVI</option></select></div>
                         </div>
                     </div>
@@ -217,22 +281,25 @@
 
     <script>
         lucide.createIcons();
+        // PASTE URL DEPLOYMENT APPSCRIPT ANDA DI SINI
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyi31_qjJFaRC9f3F55wBpKGFYoRJAoGy2bREmXqCKWEVx0ac8yvPf0Lzaj-5iO5CVR/exec'; 
         
-        // State
-        let currentUser = null;
-        let requestsData = [];
-        let currentPage = 1;
-        const ITEMS_PER_PAGE = 10;
+        let state = {
+            currentUser: null,
+            rawData: [],
+            filteredData: [],
+            filter: { month: 'all', year: 'all', search: '' },
+            currentPage: 1,
+            itemsPerPage: 10
+        };
 
-        // --- CORE UI ---
         const toggleLoader = (show) => document.getElementById('loader').classList.toggle('hidden', !show);
         
         async function api(action, payload={}) {
             toggleLoader(true);
             try {
                 const res = await fetch(SCRIPT_URL, { 
-                    method:'POST', body: JSON.stringify({ action, user:currentUser, ...payload }) 
+                    method:'POST', body: JSON.stringify({ action, user:state.currentUser, ...payload }) 
                 });
                 const json = await res.json();
                 if(!json.success) throw new Error(json.message);
@@ -243,13 +310,13 @@
             } finally { toggleLoader(false); }
         }
 
-        // --- LOGIN & INIT ---
+        // --- AUTH & INIT ---
         document.getElementById('login-btn').onclick = async () => {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             const res = await api('login', {username:u, password:p});
             if(res) {
-                currentUser = res;
+                state.currentUser = res;
                 sessionStorage.setItem('jp_user', JSON.stringify(res));
                 initApp();
             }
@@ -263,74 +330,180 @@
         function initApp() {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('app-section').classList.remove('hidden');
-            document.getElementById('user-display').innerText = currentUser.username;
-            document.getElementById('history-box').classList.toggle('hidden', currentUser.role !== 'superadmin');
+            document.getElementById('user-display').innerText = state.currentUser.username;
             loadData();
+            setupFilterListeners();
         }
 
+        // --- POPUP CONTACT DEVELOPER (NEW) ---
+        function showContact() {
+            Swal.fire({
+                title: 'Contact Developer',
+                html: `
+                    <div class="text-center">
+                        <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="mail" class="text-indigo-600 h-8 w-8"></i>
+                        </div>
+                        <p class="text-slate-600 mb-2">Jika Anda mengalami kendala teknis, hubungi:</p>
+                        <div class="bg-slate-100 p-3 rounded-lg font-mono text-sm font-bold text-slate-800 select-all border border-slate-200">
+                            business@adamzibran.site
+                        </div>
+                    </div>
+                `,
+                showCloseButton: true,
+                showConfirmButton: false,
+                didOpen: () => lucide.createIcons() // Re-render icons inside popup
+            });
+        }
+
+        // --- DATA LOGIC ---
         async function loadData() {
             const data = await api('getRequests');
             if(data) {
-                requestsData = data;
-                calculateStats(data);
-                renderTable(1);
-            }
-            if(currentUser.role === 'superadmin') {
-                const hist = await api('getHistory');
-                const hList = document.getElementById('history-list');
-                hList.innerHTML = hist.map(h => 
-                    `<div class="border-l-2 border-indigo-200 pl-2 pb-1"><div class="font-bold text-slate-700">${h.user} - ${h.action}</div><div class="text-slate-400">${new Date(h.timestamp).toLocaleString()}</div></div>`
-                ).join('');
+                state.rawData = data;
+                populateYearFilter(data);
+                applyFilters(); 
+                calculateStatsCurrentMonth(data);
             }
         }
 
-        // --- STATS ENGINE ---
-        function calculateStats(data) {
-            let stats = {
-                total: {call:0, data:0},
-                lunas: {call:0, data:0},
-                dana: {call:0, data:0},
-                cod: {call:0, data:0}
-            };
+        function populateYearFilter(data) {
+            const years = [...new Set(data.map(d => new Date(d.tanggal).getFullYear()))].sort().reverse();
+            const sel = document.getElementById('filter-year');
+            sel.innerHTML = '<option value="all">Semua Tahun</option>';
+            years.forEach(y => sel.innerHTML += `<option value="${y}">${y}</option>`);
+        }
 
-            data.forEach(req => {
-                let items = [];
-                try { items = JSON.parse(req.items); } catch(e){}
-                
-                items.forEach(item => {
-                    const type = (item.type || '').toUpperCase();
-                    const ket = (item.keterangan || '').toUpperCase();
-                    
-                    const isCall = type.includes('CALL');
-                    const target = isCall ? 'call' : 'data';
-
-                    stats.total[target]++;
-
-                    if(ket === 'LUNAS') stats.lunas[target]++;
-                    else if(ket.includes('DANA')) stats.dana[target]++;
-                    else if(ket === 'COD') stats.cod[target]++;
+        function setupFilterListeners() {
+            ['filter-month', 'filter-year', 'filter-search'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    const key = id.replace('filter-', '');
+                    state.filter[key] = e.target.value;
+                    state.currentPage = 1;
+                    applyFilters();
                 });
             });
+        }
 
-            const updateUI = (key) => {
-                document.getElementById(`stat-${key}-all`).innerText = stats[key].call + stats[key].data;
-                document.getElementById(`stat-${key}-call`).innerText = stats[key].call;
-                document.getElementById(`stat-${key}-data`).innerText = stats[key].data;
+        function applyFilters() {
+            const { month, year, search } = state.filter;
+            const searchLower = search.toLowerCase();
+
+            state.filteredData = state.rawData.filter(req => {
+                const d = new Date(req.tanggal);
+                const matchMonth = month === 'all' || d.getMonth() == month;
+                const matchYear = year === 'all' || d.getFullYear() == year;
+
+                let matchSearch = true;
+                if(searchLower) {
+                    const basicMatch = req.lpk.toLowerCase().includes(searchLower) || req.pic.toLowerCase().includes(searchLower);
+                    let items = [];
+                    try { items = JSON.parse(req.items); } catch(e){}
+                    const itemMatch = items.some(i => 
+                        (i.name && i.name.toLowerCase().includes(searchLower)) || 
+                        (i.iccid && i.iccid.toLowerCase().includes(searchLower))
+                    );
+                    matchSearch = basicMatch || itemMatch;
+                }
+                return matchMonth && matchYear && matchSearch;
+            });
+            document.getElementById('record-count').innerText = `${state.filteredData.length} Data`;
+            renderTable(state.currentPage);
+        }
+
+        // --- STATS LOGIC (REVISI FINAL: Hanya Bulan Ini + Breakdown Tipe) ---
+        function calculateStatsCurrentMonth(data) {
+            // 1. Ambil Waktu Saat Ini
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            // 2. Siapkan Wadah Statistik
+            let stats = {
+                total: { all: 0, call: 0, data: 0 },
+                lunas: { all: 0, call: 0, data: 0 },
+                dana:  { all: 0, call: 0, data: 0 },
+                cod:   { all: 0, call: 0, data: 0 }
             };
+
+            // 3. Loop Semua Data
+            data.forEach(req => {
+                const d = new Date(req.tanggal);
+                
+                // 4. FILTER: Hanya proses jika Bulan & Tahun SAMA dengan saat ini
+                if(d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                    let items = [];
+                    try { items = JSON.parse(req.items); } catch(e){}
+                    
+                    items.forEach(item => {
+                        const type = (item.type || '').toUpperCase();
+                        const ket = (item.keterangan || '').toUpperCase();
+                        
+                        const isCall = type.includes('CALL');
+                        
+                        // Hitung Total
+                        stats.total.all++;
+                        isCall ? stats.total.call++ : stats.total.data++;
+
+                        // Hitung Berdasarkan Keterangan
+                        if(ket === 'LUNAS') {
+                            stats.lunas.all++;
+                            isCall ? stats.lunas.call++ : stats.lunas.data++;
+                        }
+                        else if(ket.includes('DANA')) {
+                            stats.dana.all++;
+                            isCall ? stats.dana.call++ : stats.dana.data++;
+                        }
+                        else if(ket === 'COD') {
+                            stats.cod.all++;
+                            isCall ? stats.cod.call++ : stats.cod.data++;
+                        }
+                    });
+                }
+                // Data bulan lalu diabaikan
+            });
+
+            // 5. Update UI
+            const updateUI = (key) => {
+                animateValue(`stat-${key}-val`, stats[key].all);
+                
+                // Update teks breakdown
+                const descEl = document.getElementById(`stat-${key}-desc`);
+                if(descEl) {
+                    descEl.innerText = `CALL SIM ${stats[key].call} | DATA SIM ${stats[key].data}`;
+                }
+            };
+
             ['total', 'lunas', 'dana', 'cod'].forEach(updateUI);
         }
 
-        // --- TABLE & PAGINATION ---
+        function animateValue(id, end) {
+            const obj = document.getElementById(id);
+            if(!obj) return;
+            let start = 0;
+            if(end === 0) { obj.innerText = 0; return; }
+            let duration = 800;
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerText = current;
+                if (current == end) clearInterval(timer);
+            }, stepTime > 0 ? stepTime : 10);
+        }
+
+        // --- TABLE RENDER ---
         function renderTable(page) {
-            currentPage = page;
-            const start = (page - 1) * ITEMS_PER_PAGE;
-            const paginated = requestsData.slice(start, start + ITEMS_PER_PAGE);
+            state.currentPage = page;
+            const start = (page - 1) * state.itemsPerPage;
+            const paginated = state.filteredData.slice(start, start + state.itemsPerPage);
             const tbody = document.getElementById('table-body');
-            
             tbody.innerHTML = '';
             
             if(paginated.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-400">Tidak ada data.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-400">Tidak ada data ditemukan.</td></tr>`;
                 return;
             }
 
@@ -338,11 +511,15 @@
                 let items = [];
                 try { items = JSON.parse(r.items); } catch(e){}
                 
-                const ketUnik = [...new Set(items.map(i => i.keterangan || '-'))].join(', ');
-                const isAdmin = currentUser.role === 'superadmin';
+                const ketCounts = items.reduce((acc, curr) => {
+                    const k = curr.keterangan || 'Lainnya';
+                    acc[k] = (acc[k] || 0) + 1;
+                    return acc;
+                }, {});
+                const ketString = Object.entries(ketCounts).map(([k,v]) => `${k}(${v})`).join(', ');
 
                 tbody.innerHTML += `
-                <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-50 fade-in">
+                <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-50 fade-in group">
                     <td class="px-6 py-4">
                         <div class="font-mono text-xs text-indigo-500 font-bold">${r.id}</div>
                         <div class="text-xs text-slate-400 mt-1">${new Date(r.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'})}</div>
@@ -352,62 +529,64 @@
                         <div class="text-xs text-slate-500 flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> ${r.pic}</div>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full">${items.length} Kartu</span>
-                        <div class="text-[10px] text-slate-400 mt-1 truncate max-w-[100px] mx-auto" title="${ketUnik}">${ketUnik}</div>
+                        <span class="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-1 rounded-md border border-slate-200">${items.length}</span>
                     </td>
-                    <td class="px-6 py-4 text-xs text-slate-500">${r.submitted_by}</td>
+                    <td class="px-6 py-4 text-xs text-slate-500 truncate max-w-[150px]" title="${ketString}">
+                        ${ketString}
+                    </td>
                     <td class="px-6 py-4 text-center">
-                        <div class="flex justify-center gap-2">
-                            <button onclick="printPDF('${r.id}')" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition" title="Print PDF"><i data-lucide="printer" class="w-4 h-4"></i></button>
-                            ${isAdmin ? `
-                            <button onclick="editItem('${r.id}')" class="text-amber-500 hover:bg-amber-50 p-2 rounded-lg transition" title="Edit"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                            <button onclick="deleteItem('${r.id}')" class="text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <div class="flex justify-center gap-1 opacity-80 group-hover:opacity-100 transition">
+                            <button onclick="printPDF('${r.id}')" class="text-blue-600 hover:bg-blue-50 p-2 rounded transition" title="PDF"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                            <button onclick="exportSingleCSV('${r.id}')" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded transition" title="CSV"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i></button>
+                            ${state.currentUser.role === 'superadmin' ? `
+                            <button onclick="editItem('${r.id}')" class="text-amber-500 hover:bg-amber-50 p-2 rounded transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem('${r.id}')" class="text-rose-500 hover:bg-rose-50 p-2 rounded transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             ` : ''}
                         </div>
                     </td>
                 </tr>`;
             });
 
-            // Update Buttons
-            const totalPages = Math.ceil(requestsData.length / ITEMS_PER_PAGE);
-            document.getElementById('page-info').innerText = `Halaman ${currentPage} dari ${totalPages}`;
-            document.getElementById('prev-btn').disabled = currentPage === 1;
-            document.getElementById('next-btn').disabled = currentPage === totalPages || totalPages === 0;
-            
-            document.getElementById('prev-btn').onclick = () => renderTable(currentPage - 1);
-            document.getElementById('next-btn').onclick = () => renderTable(currentPage + 1);
-            
+            const totalPages = Math.ceil(state.filteredData.length / state.itemsPerPage);
+            document.getElementById('page-info').innerText = `Halaman ${state.currentPage} / ${totalPages || 1}`;
+            document.getElementById('prev-btn').disabled = state.currentPage === 1;
+            document.getElementById('next-btn').disabled = state.currentPage >= totalPages;
+            document.getElementById('prev-btn').onclick = () => renderTable(state.currentPage - 1);
+            document.getElementById('next-btn').onclick = () => renderTable(state.currentPage + 1);
             lucide.createIcons();
         }
 
-        // --- FORM & ITEMS LOGIC ---
+        // --- FORM FUNCTIONS ---
         function addItemRow(data = {}) {
             const div = document.createElement('div');
-            div.className = 'grid grid-cols-12 gap-2 item-row items-center animate-fade-in mb-2';
+            div.className = 'grid grid-cols-12 gap-2 item-row items-center animate-fade-in mb-2 pb-2 border-b border-dashed border-slate-200 last:border-0';
             div.innerHTML = `
                 <div class="col-span-3">
-                    <input type="text" value="${data.name||''}" class="inp-name w-full px-2 py-2 border rounded text-xs uppercase-input focus:ring-1 focus:ring-indigo-500" placeholder="Nama Peserta">
+                    <input type="text" value="${data.name||''}" class="inp-name w-full px-2 py-1.5 border rounded text-xs uppercase-input focus:ring-1 focus:ring-indigo-500" placeholder="Nama Peserta">
                 </div>
                 <div class="col-span-2">
-                    <select class="inp-type w-full px-1 py-2 border rounded text-xs bg-white">
+                    <select class="inp-type w-full px-1 py-1.5 border rounded text-xs bg-white">
                         <option ${data.type==='CALL SIM'?'selected':''}>CALL SIM</option>
                         <option ${data.type==='DATA SIM'?'selected':''}>DATA SIM</option>
                     </select>
                 </div>
-                <div class="col-span-3">
-                    <input type="text" value="${data.iccid||''}" class="inp-iccid w-full px-2 py-2 border rounded text-xs uppercase-input" placeholder="ICCID">
+                <div class="col-span-2">
+                    <input type="text" value="${data.iccid||''}" class="inp-iccid w-full px-2 py-1.5 border rounded text-xs uppercase-input" placeholder="ICCID">
                 </div>
-                <div class="col-span-3">
-                    <select class="inp-ket w-full px-1 py-2 border rounded text-xs bg-white text-slate-600 font-medium">
+                <div class="col-span-2">
+                    <input type="date" value="${data.tglAktivasi||''}" class="inp-aktivasi w-full px-1 py-1.5 border rounded text-xs bg-white text-slate-600">
+                </div>
+                <div class="col-span-2">
+                    <select class="inp-ket w-full px-1 py-1.5 border rounded text-xs bg-white text-slate-600 font-medium">
                         <option value="LUNAS" ${data.keterangan==='LUNAS'?'selected':''}>LUNAS</option>
                         <option value="DANA TALANG" ${data.keterangan==='DANA TALANG'?'selected':''}>DANA TALANG</option>
                         <option value="COD" ${data.keterangan==='COD'?'selected':''}>COD</option>
                         <option value="STOCK LPK" ${data.keterangan==='STOCK LPK'?'selected':''}>STOCK LPK</option>
-                        <option value="LAINNYA" ${['LUNAS','DANA TALANG','COD','STOCK LPK'].includes(data.keterangan)?'':'selected'}>LAINNYA</option>
+                        <option value="LAINYA" ${data.keterangan==='LAINYA'?'selected':''}>LAINYA</option>
                     </select>
                 </div>
                 <div class="col-span-1 text-center">
-                    <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-rose-400 hover:text-rose-600"><i data-lucide="x" class="w-4 h-4"></i></button>
                 </div>
             `;
             document.getElementById('items-container').appendChild(div);
@@ -417,14 +596,11 @@
         function openForm(isEdit=false) {
             document.getElementById('dashboard-view').classList.add('hidden');
             document.getElementById('form-view').classList.remove('hidden');
-            
-            // Reset Form
             document.getElementById('edit-id').value = '';
             document.getElementById('inp-lpk').value = '';
             document.getElementById('inp-pic').value = '';
             document.getElementById('inp-tanggal').valueAsDate = new Date();
             document.getElementById('items-container').innerHTML = '';
-            
             if(!isEdit) addItemRow(); 
         }
 
@@ -432,18 +608,6 @@
             document.getElementById('form-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
         }
-
-        window.editItem = (id) => {
-            const data = requestsData.find(r => r.id === id);
-            if(!data) return;
-            openForm(true);
-            document.getElementById('edit-id').value = id;
-            document.getElementById('inp-lpk').value = data.lpk;
-            document.getElementById('inp-pic').value = data.pic;
-            document.getElementById('inp-tanggal').value = new Date(data.tanggal).toISOString().split('T')[0];
-            
-            JSON.parse(data.items).forEach(addItemRow);
-        };
 
         async function submitForm() {
             const items = [];
@@ -454,6 +618,7 @@
                         name: name,
                         type: row.querySelector('.inp-type').value,
                         iccid: row.querySelector('.inp-iccid').value.toUpperCase(),
+                        tglAktivasi: row.querySelector('.inp-aktivasi').value,
                         keterangan: row.querySelector('.inp-ket').value
                     });
                 }
@@ -482,182 +647,164 @@
             }
         }
 
+        window.editItem = (id) => {
+            const data = state.rawData.find(r => r.id === id);
+            if(!data) return;
+            openForm(true);
+            document.getElementById('edit-id').value = id;
+            document.getElementById('inp-lpk').value = data.lpk;
+            document.getElementById('inp-pic').value = data.pic;
+            document.getElementById('inp-tanggal').value = new Date(data.tanggal).toISOString().split('T')[0];
+            JSON.parse(data.items).forEach(addItemRow);
+        };
+
         window.deleteItem = async (id) => {
-            if((await Swal.fire({title:'Hapus Data?', text:'Tidak bisa dikembalikan', icon:'warning', showCancelButton:true})).isConfirmed) {
+            if((await Swal.fire({title:'Hapus?', icon:'warning', showCancelButton:true})).isConfirmed) {
                 if(await api('deleteRequest', {id})) {
                     Swal.fire('Terhapus', '', 'success');
                     loadData();
                 }
             }
+        };
+
+        // --- EXPORT & PRINT ---
+        function generateCSV(dataSet, filename) {
+            let csvContent = "data:text/csv;charset=utf-8,ID Permohonan,Tanggal,LPK,PIC,Nama Peserta,Tipe Sim,ICCID,Tgl Aktivasi,Keterangan\n";
+            dataSet.forEach(req => {
+                let items = [];
+                try { items = JSON.parse(req.items); } catch(e){}
+                const dateStr = new Date(req.tanggal).toLocaleDateString('id-ID');
+                items.forEach(item => {
+                    csvContent += [req.id, dateStr, `"${req.lpk}"`, `"${req.pic}"`, `"${item.name}"`, item.type, `'${item.iccid}`, item.tglAktivasi||'-', item.keterangan].join(",") + "\n";
+                });
+            });
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        /* =============================================================
-           PDF GENERATOR LOGIC (UPDATED)
-           =============================================================
-        */
-        
-        async function generatePDF(data) {
+        window.exportFilteredCSV = () => {
+            if(state.filteredData.length === 0) return Swal.fire('Kosong', 'Tidak ada data', 'info');
+            generateCSV(state.filteredData, `Export-Data-${new Date().getTime()}.csv`);
+        };
+
+        window.exportSingleCSV = (id) => {
+            const req = state.rawData.filter(r => r.id === id);
+            generateCSV(req, `Export-${req[0].lpk}-${req[0].id}.csv`);
+        };
+
+        window.printPDF = async (id) => {
+            const r = state.rawData.find(x => x.id === id);
+            if (!r) return;
             toggleLoader(true);
+
+            // --- FUNGSI BANTU LOAD GAMBAR ---
+            const loadImage = (src) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => resolve(img);
+                    img.onerror = () => {
+                        console.warn("Gagal memuat logo:", src);
+                        resolve(null); // Lanjut tanpa logo jika error
+                    };
+                });
+            };
+
             try {
+                let itemsArr = [];
+                try { itemsArr = JSON.parse(r.items); } catch(e){}
+                
+                // 1. Load Logo terlebih dahulu
+                const logoImg = await loadImage('assets/logo.png');
+
                 const { jsPDF } = window.jspdf;
-                const orientation = "portrait";
-                const pdf = new jsPDF({
-                    orientation: orientation,
-                    unit: "pt",
-                    format: "a4"
+                const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const purple = [79, 70, 229];
+
+                pdf.setDrawColor(...purple); pdf.setLineWidth(2);
+                pdf.rect(20, 20, pageWidth - 40, pdf.internal.pageSize.getHeight() - 40);
+
+                // --- LOGIKA POSISI LOGO ---
+                if (logoImg) {
+                    const logoWidth = 120; // Atur lebar logo (dalam pt)
+                    // Hitung tinggi otomatis agar rasio gambar tetap bagus
+                    const logoHeight = logoWidth * (logoImg.height / logoImg.width); 
+                    
+                    // Posisi X: Lebar Halaman - Margin Kanan (40) - Lebar Logo
+                    const logoX = pageWidth - 60 - logoWidth; 
+                    const logoY = 70; // Margin atas sedikit dibawah garis border
+
+                    // Tambahkan gambar (Format 'PNG' atau 'JPEG' sesuaikan dengan file asli)
+                    pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidth, logoHeight);
+                }
+                // ---------------------------
+
+                pdf.setFont("Helvetica", "bold"); pdf.setFontSize(18); pdf.setTextColor(...purple);
+                pdf.text("FORM PERMOHONAN KARTU", 40, 70);
+                
+                pdf.setFontSize(10); pdf.setTextColor(100);
+                pdf.text(`ID: ${r.id}`, 40, 85);
+                pdf.text(`Tanggal: ${new Date(r.tanggal).toLocaleDateString('id-ID')}`, 40, 100);
+                pdf.text(`LPK: ${r.lpk} | PIC: ${r.pic}`, 40, 115);
+
+                const tableBody = itemsArr.map((item, i) => {
+                    let tglAktivasiFormatted = '-';
+                    if(item.tglAktivasi) {
+                        try {
+                            const date = new Date(item.tglAktivasi);
+                            tglAktivasiFormatted = date.toLocaleDateString('id-ID', {
+                                day: '2-digit', month: '2-digit', year: 'numeric'
+                            });
+                        } catch(e) {
+                            tglAktivasiFormatted = item.tglAktivasi;
+                        }
+                    }
+                    
+                    return [
+                        i + 1, 
+                        item.name, 
+                        item.type, 
+                        item.iccid, 
+                        tglAktivasiFormatted,
+                        item.keterangan || "-"
+                    ];
                 });
 
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-
-                // === TEMA UNGU ===
-                const purple = [120, 55, 200];     // Ungu elegan
-                const purpleDark = [90, 40, 160];  // Ungu gelap untuk variasi
-
-                // 1. BORDER RESMI — UBAH WARNA JADI UNGU
-                pdf.setDrawColor(...purple);
-                pdf.setLineWidth(1.5);
-                pdf.rect(20, 20, pageWidth - 40, pageHeight - 40);
-
-                // 2. LOGO POJOK KANAN ATAS
-                const logoUrl = "./assets/logo.png";
-                try {
-                    const img = await fetch(logoUrl)
-                        .then(r => {
-                            if (!r.ok) throw new Error("Gagal mengambil file gambar");
-                            return r.blob();
-                        })
-                        .then(b => new Promise(resolve => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.readAsDataURL(b);
-                        }));
-
-                    // --- PENGATURAN UKURAN AGAR TIDAK GEPENG ---
-                    // Kita tentukan lebarnya saja (misal: 50 unit), tingginya akan hitung otomatis
-                    const myLogoWidth = 100; 
-                    const myLogoHeight = myLogoWidth * (186 / 700); // Rumus: Lebar * (TinggiAsli / LebarAsli)
-
-                    // Posisi X dan Y
-                    const xPosition = pageWidth - myLogoWidth - 50; // Geser ke kanan (dikurangi margin 10)
-                    const yPosition = 50; // Margin atas
-
-                    // Masukkan variabel ukuran tadi ke fungsi addImage
-                    pdf.addImage(img, "PNG", xPosition, yPosition, myLogoWidth, myLogoHeight); 
-
-                } catch (error) {
-                    console.log("Logo gagal dimuat. Pastikan menggunakan Local Server (Live Server):", error);
-                }
-
-                // 3. HEADER SURAT RESMI — TAMBAH WARNA UNGU
-                pdf.setFont("Helvetica", "bold");
-                pdf.setFontSize(18);
-                pdf.setTextColor(...purple);
-                pdf.text("FORM PERMOHONAN KARTU KELUAR", 40, 70);
-
-                pdf.setFontSize(12);
-                pdf.setFont("Helvetica", "normal");
-                pdf.setTextColor(50); // Abu-abu gelap
-                pdf.text("PERMOHONAN KARTU RESMI", 40, 90);
-
-                // Garis ungu
-                pdf.setDrawColor(...purple);
-                pdf.line(40, 100, pageWidth - 40, 100);
-
-                // 4. DATA PEMOHON
-                pdf.setFontSize(12);
-                pdf.setFont("Helvetica", "bold");
-                pdf.setTextColor(...purpleDark);
-                pdf.text("Data Pemohon:", 40, 130);
-
-                pdf.setFont("Helvetica", "normal");
-                pdf.setTextColor(20);
-                pdf.text(`LPK                   : ${data.lpk}`, 40, 150);
-                pdf.text(`PIC                   : ${data.pic}`, 40, 170);
-                pdf.text(`TANGGAL       : ${data.tanggal}`, 40, 190);
-
-                // 5. TABLE KARTU — UBAH TEMA HEADER UNGU
-                const tableBody = data.items.map((item, i) => ([
-                    i + 1,
-                    item.nama,
-                    item.tipe,
-                    item.iccid,
-                    item.keterangan || "-"
-                ]));
-
                 pdf.autoTable({
-                    startY: 220,
-                    head: [["No", "Nama", "Tipe", "ICCID", "Keterangan"]],
-                    body: tableBody,
-                    styles: { 
-                        fontSize: 9,
-                        cellPadding: 5
-                    },
-                    headStyles: { 
-                        fillColor: purple,
-                        textColor: 255,
-                        lineWidth: 0.5,
-                        lineColor: purpleDark
-                    },
+                    startY: 140, 
+                    head: [["No", "Nama", "Tipe", "ICCID", "Tgl Aktivasi", "Ket"]],
+                    body: tableBody, 
+                    styles: { fontSize: 8, cellPadding: 4 }, 
+                    headStyles: { fillColor: purple, textColor: 255 }, 
                     margin: { left: 40, right: 40 }
                 });
 
-                let finalY = pdf.lastAutoTable.finalY + 30;
-
-                // 6. FOOTER TANDA TANGAN — WARNA UNGU
+                let finalY = pdf.lastAutoTable.finalY + 40;
+                pdf.setFontSize(10); pdf.setTextColor(0);
+                pdf.text("Penerima", 60, finalY); 
+                pdf.text("Menyetujui", pageWidth/2 - 30, finalY); 
+                pdf.text("Mengetahui", pageWidth - 100, finalY);
                 pdf.setFont("Helvetica", "bold");
-                pdf.setTextColor(...purpleDark);
-                pdf.text("Penerima:", 40, finalY + 20);
-                pdf.text("Menyetujui:", pageWidth / 2 - 40, finalY + 20);
-                pdf.text("Mengetahui:", pageWidth - 200, finalY + 20);
-
-                pdf.setFont("Helvetica", "normal");
-                pdf.setTextColor(20);
-                pdf.text(data.penerima, 40, finalY + 90);
-                pdf.text(data.menyetujui, pageWidth / 2 - 40, finalY + 90);
-                pdf.text(data.mengetahui, pageWidth - 200, finalY + 90);
-
-                // 7. SAVE PDF
-                pdf.save(`Permohonan-${data.lpk}-${data.tanggal}.pdf`);
-            } catch (err) {
-                console.error(err);
-                Swal.fire("Error PDF", "Gagal membuat PDF", "error");
+                pdf.text(r.penerima || '...', 60, finalY + 50); 
+                pdf.text(r.menyetujui || '...', pageWidth/2 - 30, finalY + 50); 
+                pdf.text(r.mengetahui || '...', pageWidth - 100, finalY + 50);
+                
+                pdf.save(`Permohonan-${r.lpk}-${r.id}.pdf`);
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Error', 'Gagal PDF', 'error');
             } finally {
                 toggleLoader(false);
             }
-        }
-
-
-        // --- ADAPTER FUNCTION FOR TABLE BUTTON ---
-        window.printPDF = async (id) => {
-            const r = requestsData.find(x => x.id === id);
-            if (!r) return;
-
-            let itemsArr = [];
-            try { itemsArr = JSON.parse(r.items); } catch(e){}
-
-            // Mapping data dari Database (requestsData) ke format yang diminta generatePDF
-            const pdfData = {
-                lpk: r.lpk,
-                pic: r.pic,
-                tanggal: new Date(r.tanggal).toLocaleDateString('id-ID'),
-                items: itemsArr.map(i => ({
-                    nama: i.name,         // DB: name -> PDF: nama
-                    tipe: i.type,         // DB: type -> PDF: tipe
-                    iccid: i.iccid,
-                    keterangan: i.keterangan
-                })),
-                penerima: r.penerima || "HEGAR",
-                menyetujui: r.menyetujui || "HANNA",
-                mengetahui: r.mengetahui || "PAK NOVI"
-            };
-
-            await generatePDF(pdfData);
         };
 
-        // Check Login
         const sess = sessionStorage.getItem('jp_user');
-        if(sess) { currentUser = JSON.parse(sess); initApp(); }
+        if(sess) { state.currentUser = JSON.parse(sess); initApp(); }
     </script>
 </body>
 </html>
